@@ -90,7 +90,7 @@ function navigateToPage(page) {
     }
 
     
-if (["challenges", "ranked", "settings"].includes(page)) {
+if (["challenges", "settings"].includes(page)) {
     alert("Dieser Bereich ist noch nicht verfügbar.");
     return;
 }
