@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08080c">
+    <title>Kampagne – Filler: Color Fill</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/global_ui.css">
+    <link rel="stylesheet" href="../css/campaign.css">
+    <link rel="stylesheet" href="../css/levelsystem.css">
+</head>
+<body>
+    <main class="campaign-screen">
+    <div class="campaign-container">
+
+        <!-- HEADER – IDENTISCH ZUM MENU -->
+        <header class="menu-header">
+            <div>
+                <div class="menu-logo">
+                    FILLER
+                </div>
+
+                <div class="menu-subtitle">
+                    COLOR FILL
+                </div>
+            </div>
+
+            <button
+                id="logout-button"
+                class="icon-button"
+                aria-label="Logout"
+            >
+                ↪
+            </button>
+        </header>
+
+        <h1>Kampagne</h1>
+
+        <p>
+            Schließe Level ab, sammle Sterne und verdiene XP.
+            Schließe ein Level ab, um das nächste freizuschalten.
+        </p>
+
+            <section class="campaign-progress" aria-label="Kampagnenfortschritt">
+                <div class="campaign-progress-top">
+                    <strong>Dein Fortschritt</strong>
+                    <span id="campaign-progress-text">0 / 10 Level abgeschlossen</span>
+                </div>
+                <div class="campaign-progress-track" role="progressbar" aria-label="Kampagnenfortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="campaign-progress-bar"></div>
+                </div>
+                <div class="campaign-summary">
+                    <span>Gesammelte Sterne: <strong id="campaign-stars-total">0 / 30</strong></span>
+                </div>
+            </section>
+
+            <section id="campaign-levels" aria-label="Kampagnenlevel">
+                <p class="campaign-loading">Lade Kampagne …</p>
+            </section>
+            <p id="campaign-message" class="campaign-message" role="status" aria-live="polite"></p>
+        </div>
+    </main>
+
+      <footer class="profile-footer">
+    <p>FILLER – COLOR FILL</p>
+    <a href="menu.html">Zurück zum Menü</a>
+  </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/levelsystem.js"></script>
+    <script src="../js/campaign.js"></script>
+</body>
+</html>

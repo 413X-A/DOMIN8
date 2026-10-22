@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10131c">
+  <title>Mein Profil | FILLER – COLOR FILL</title>
+
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/global_ui.css">
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="../css/levelsystem.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+
+  <div class="menu-container profile-page">
+
+    <!-- HEADER – WIE IN menu.html -->
+    <header class="menu-header">
+      <div>
+        <div class="menu-logo">FILLER</div>
+        <div class="menu-subtitle">COLOR FILL</div>
+      </div>
+
+      <button
+        id="logout-button"
+        class="icon-button"
+        aria-label="Logout"
+      >
+        ↪
+      </button>
+    </header>
+
+  </div>
+
+  <main class="profile-container">
+    <!-- PROFILKOPF -->
+    <section class="profile-hero">
+      <div class="avatar" id="profileAvatar">?</div>
+
+      <div class="profile-identity">
+        <p class="eyebrow">SPIELERPROFIL</p>
+        <h1 id="profileUsername">Spieler</h1>
+        <p id="profileEmail" class="muted">Profil wird geladen …</p>
+        <p class="player-level">
+          Level <strong id="playerLevel">1</strong>
+        </p>
+      </div>
+
+      <div class="xp-panel">
+        <div class="stat-label">GESAMT-XP</div>
+        <div class="stat-value" id="totalXP">0</div>
+        <div class="xp-track">
+          <div id="xpProgressBar" class="xp-progress"></div>
+        </div>
+        <p id="xpProgressText" class="muted">0 XP bis zum nächsten Level</p>
+      </div>
+    </section>
+
+    <!-- GESAMTÜBERSICHT -->
+    <section class="stats-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">DEINE BILANZ</p>
+          <h2>Gesamtübersicht</h2>
+        </div>
+        <span class="section-icon">◆</span>
+      </div>
+
+      <div class="stats-grid overview-grid">
+        <article class="stat-card">
+          <span class="stat-icon">🎮</span>
+          <span class="stat-label">Gespielte Spiele</span>
+          <strong id="totalGames">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">🏆</span>
+          <span class="stat-label">Siege</span>
+          <strong id="totalWins">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">⭐</span>
+          <span class="stat-label">Gesamtsterne</span>
+          <strong id="totalStars">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">⚡</span>
+          <span class="stat-label">Gesamtzüge</span>
+          <strong id="totalMoves">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">📈</span>
+          <span class="stat-label">Kampagnenfortschritt</span>
+          <strong id="campaignProgress">0 %</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-icon">🥇</span>
+          <span class="stat-label">Ranked-Rang</span>
+          <strong id="rankedRank">Nicht gerankt</strong>
+        </article>
+      </div>
+    </section>
+
+    <!-- UNENDLICH -->
+    <section class="stats-section mode-section" id="infiniteSection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">FREIES SPIELEN</p>
+          <h2>♾️ Unendlich</h2>
+          <p class="section-description">
+            Deine bisherigen Leistungen im freien Spielmodus.
+          </p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Gestartete Spiele</span>
+          <strong id="infiniteStarted">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Abgeschlossene Spiele</span>
+          <strong id="infiniteCompleted">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Verlorene Spiele</span>
+          <strong id="infiniteLost">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Gesamtzüge</span>
+          <strong id="infiniteMoves">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Bestleistung</span>
+          <strong id="infiniteBestMoves">–</strong>
+          <small>Wenigste Züge</small>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Verdiente XP</span>
+          <strong id="infiniteXP">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Gesamtsterne</span>
+          <strong id="infiniteStars">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Höchste Füllquote</span>
+          <strong id="infiniteBestFill">0 %</strong>
+        </article>
+      </div>
+    </section>
+
+    <!-- KAMPAGNE -->
+    <section class="stats-section mode-section" id="campaignSection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LEVEL-FORTSCHRITT</p>
+          <h2>🗺️ Kampagne</h2>
+          <p class="section-description">
+            Verfolge deinen Fortschritt durch die Kampagnenlevel.
+          </p>
+        </div>
+      </div>
+
+      <div class="campaign-progress-panel">
+        <div class="progress-heading">
+          <span>Gesamtfortschritt</span>
+          <strong id="campaignProgressDetail">0 %</strong>
+        </div>
+        <div class="progress-track">
+          <div id="campaignProgressBar" class="progress-fill"></div>
+        </div>
+        <p class="muted">
+          <span id="campaignCompleted">0</span> von
+          <span id="campaignTotalLevels">0</span> Leveln abgeschlossen
+        </p>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Freigeschaltete Level</span>
+          <strong id="campaignUnlocked">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Gesamtsterne</span>
+          <strong id="campaignStars">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Verdiente XP</span>
+          <strong id="campaignXP">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Benötigte Züge</span>
+          <strong id="campaignMoves">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Ø Züge pro Level</span>
+          <strong id="campaignAverageMoves">–</strong>
+        </article>
+      </div>
+    </section>
+
+    <!-- HERAUSFORDERUNGEN -->
+    <section class="stats-section mode-section" id="challengeSection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">SPEZIELLE AUFGABEN</p>
+          <h2>🎯 Herausforderungen</h2>
+          <p class="section-description">
+            Meistere besondere Ziele und verbessere deine Bestleistungen.
+          </p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Gestartete Herausforderungen</span>
+          <strong id="challengeStarted">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Erfolgreich abgeschlossen</span>
+          <strong id="challengeCompleted">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Erfolgsquote</span>
+          <strong id="challengeWinRate">0 %</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Beste Zugzahl</span>
+          <strong id="challengeBestMoves">–</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Beste Zeit</span>
+          <strong id="challengeBestTime">–</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Verdiente XP</span>
+          <strong id="challengeXP">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Gesamtsterne</span>
+          <strong id="challengeStars">0</strong>
+        </article>
+      </div>
+    </section>
+
+    <!-- RANKED -->
+    <section class="stats-section mode-section" id="rankedSection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">WETTBEWERB</p>
+          <h2>🏆 Ranked</h2>
+          <p class="section-description">
+            Deine Ergebnisse, Wertung und Siegesserien im Wettbewerb.
+          </p>
+        </div>
+        <span class="rank-badge" id="rankBadge">Unranked</span>
+      </div>
+
+      <div class="rank-highlight">
+        <div>
+          <span class="stat-label">Aktueller Rang</span>
+          <strong id="rankedRankDetail">Noch kein Rang</strong>
+        </div>
+        <div>
+          <span class="stat-label">Rating</span>
+          <strong id="rankedRating">0</strong>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Gespielte Matches</span>
+          <strong id="rankedPlayed">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Siege</span>
+          <strong id="rankedWins">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Niederlagen</span>
+          <strong id="rankedLosses">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Siegquote</span>
+          <strong id="rankedWinRate">0 %</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Aktuelle Siegesserie</span>
+          <strong id="rankedCurrentStreak">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Beste Siegesserie</span>
+          <strong id="rankedBestStreak">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Saison-Siege</span>
+          <strong id="rankedSeasonWins">0</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Saison-Niederlagen</span>
+          <strong id="rankedSeasonLosses">0</strong>
+        </article>
+      </div>
+    </section>
+
+    <p id="profileStatus" class="status-message" role="status"></p>
+  </main>
+
+  <footer class="profile-footer">
+    <p>FILLER – COLOR FILL</p>
+    <a href="menu.html">Zurück zum Menü</a>
+  </footer>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/levelsystem.js"></script>
+  <script type="module" src="../js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#08080c">
+    <meta name="description" content="Filler: Color Fill – Fülle das Spielfeld und meistere die Level.">
+
+    <title>Filler: Color Fill</title>
+
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <main id="app">
+
+        <!-- INTRO -->
+        <section id="intro-screen" class="screen active" aria-label="Startbildschirm">
+            <div class="intro-content">
+                <div class="logo">FILLER</div>
+                <div class="subtitle">COLOR FILL</div>
+
+                <p class="intro-description">
+                    One board. One color. Fill it all.
+                </p>
+
+                <button id="intro-start" class="primary-button" type="button">
+                    START
+                </button>
+            </div>
+        </section>
+
+        <!-- LOGIN -->
+        <section id="login-screen" class="screen" aria-label="Anmeldung">
+            <div class="auth-container">
+
+                <button id="back-to-intro" class="auth-back" type="button">
+                    ← Zurück
+                </button>
+
+                <div class="auth-logo">FILLER</div>
+                <div class="auth-subtitle">COLOR FILL</div>
+
+                <div class="auth-card">
+                    <h1>WELCOME</h1>
+
+                    <p class="auth-description">
+                        Melde dich an und tauche ein in die Welt von Color Fill.
+                    </p>
+
+                    <form id="login-form">
+                        <label for="login-email">E-Mail</label>
+                        <input
+                            id="login-email"
+                            name="email"
+                            type="email"
+                            placeholder="name@beispiel.de"
+                            autocomplete="email"
+                            required
+                        >
+
+                        <label for="login-password">Passwort</label>
+                        <input
+                            id="login-password"
+                            name="password"
+                            type="password"
+                            placeholder="Passwort eingeben"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button id="login-button" type="submit" class="primary-button">
+                            LOGIN
+                        </button>
+                        <button id="signup-button" type="button" class="secondary-button signup-button">
+                            KONTO ERSTELLEN
+                        </button>
+                    </form>
+
+                    <p id="login-message" class="message" role="status" aria-live="polite"></p>
+                </div>
+
+                <p class="auth-footer">FILLER: COLOR FILL</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

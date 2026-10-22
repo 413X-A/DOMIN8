@@ -1,0 +1,160 @@
+
+
+/* Player */
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+    background: var(--surface);
+}
+
+.player-avatar {
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--surface-light);
+    color: var(--text);
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.player-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.player-label {
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+}
+
+.player-name {
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+/* Main menu buttons */
+
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.menu-button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    min-height: 94px;
+    padding: 21px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+    background: var(--surface);
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.menu-button:hover {
+    background: var(--surface-light);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.menu-button-main {
+    min-height: 112px;
+    background: var(--text);
+    color: var(--accent-text);
+}
+
+.menu-button-main:hover {
+    background: #e8e8ed;
+}
+
+.menu-button-title {
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+}
+
+.menu-button-description {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.menu-button-main .menu-button-description {
+    color: #555560;
+}
+
+/* Footer */
+
+.menu-footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.footer-button {
+    min-height: 46px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.footer-button:hover {
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+    .menu-container {
+        padding: 20px 16px;
+    }
+
+    .menu-header {
+        margin-bottom: 28px;
+    }
+
+    .menu-button {
+        min-height: 84px;
+        padding: 18px;
+    }
+
+    .menu-button-main {
+        min-height: 100px;
+    }
+}

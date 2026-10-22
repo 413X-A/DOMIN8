@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="theme-color"
+        content="#08080c"
+    >
+
+    <title>Filler - Menu</title>
+
+<link rel="stylesheet" href="../css/global.css">
+<link rel="stylesheet" href="../css/global_ui.css">
+<link rel="stylesheet" href="../css/menu.css">
+<link rel="stylesheet" href="../css/levelsystem.css">
+
+</head>
+
+<div id="level-up-overlay" class="level-up-overlay" aria-hidden="true">
+  <div class="level-up-card">
+    <div class="level-up-sparkle">✦</div>
+    <div class="level-up-label">LEVEL AUFGESTIEGEN!</div>
+    <div class="level-up-number" id="level-up-number">LEVEL 2</div>
+    <p id="level-up-message">Weiter so! Du wirst immer besser.</p>
+    <button id="level-up-close" type="button">Weiter spielen</button>
+  </div>
+</div>
+
+
+<body>
+
+<main id="app">
+
+
+    <!-- =================================================
+         MENU
+    ================================================== -->
+
+    <section
+        id="menu-screen"
+        class="screen active"
+    >
+
+        <div class="menu-container">
+
+
+            <!-- HEADER -->
+
+            <header class="menu-header">
+
+                <div>
+
+                    <div class="menu-logo">
+                        FILLER
+                    </div>
+
+                    <div class="menu-subtitle">
+                        COLOR FILL
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="logout-button"
+                    class="icon-button"
+                    aria-label="Logout"
+                >
+                    ↪
+                </button>
+
+            </header>
+
+
+            <!-- PLAYER -->
+
+            <div class="player-info">
+
+                <div class="player-avatar">
+
+                    <span>
+                        ?
+                    </span>
+
+                </div>
+
+
+                <div class="player-details">
+
+                    <span class="player-label">
+                        PLAYER
+                    </span>
+
+                    <span
+                        id="player-name"
+                        class="player-name"
+                    >
+                        Player
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <div class="menu-actions">
+
+
+                <button
+                    class="menu-button menu-button-main"
+                    data-page="game"
+                >
+
+                    <span class="menu-button-title">
+                        PLAY
+                    </span>
+
+                    <span class="menu-button-description">
+                        Start a game
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="menu-button"
+                    data-page="campaign"
+                >
+
+                    <span class="menu-button-title">
+                        CAMPAIGN
+                    </span>
+
+                    <span class="menu-button-description">
+                        Follow the story
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="menu-button"
+                    data-page="challenges"
+                >
+
+                    <span class="menu-button-title">
+                        CHALLENGES
+                    </span>
+
+                    <span class="menu-button-description">
+                        Test your skills
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="menu-button"
+                    data-page="ranked"
+                >
+
+                    <span class="menu-button-title">
+                        RANKED
+                    </span>
+
+                    <span class="menu-button-description">
+                        Compete with others
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <footer class="menu-footer">
+
+
+                <button
+                    class="footer-button"
+                    data-page="profile"
+                >
+                    PROFILE
+                </button>
+
+
+                <button
+                    class="footer-button"
+                    data-page="settings"
+                >
+                    SETTINGS
+                </button>
+
+
+            </footer>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+<footer class="profile-footer">
+    <p>FILLER – COLOR FILL</p>
+    <a href="menu.html">Zurück zum Menü</a>
+  </footer>
+
+
+<!-- =====================================================
+     SUPABASE
+====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../js/config.js"></script>
+
+<script src="../js/supabase.js"></script>
+<script src="../js/levelsystem.js"></script>
+
+<script src="../js/menu.js"></script>
+
+
+</body>
+
+</html>

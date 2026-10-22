@@ -1,0 +1,80 @@
+
+.level-up-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(5, 8, 25, 0.82);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms ease, visibility 250ms ease;
+}
+
+.level-up-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.level-up-card {
+  width: min(420px, 100%);
+  padding: 36px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 24px;
+  text-align: center;
+  color: white;
+  background: linear-gradient(145deg, #24205a, #10152e);
+  box-shadow: 0 0 60px rgba(124, 92, 255, 0.4);
+  animation: levelUpPop 450ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.level-up-sparkle {
+  font-size: 64px;
+  color: #ffe66d;
+  animation: levelUpSpin 2s ease-in-out infinite;
+}
+
+.level-up-label {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #b9adff;
+}
+
+.level-up-number {
+  margin: 16px 0;
+  font-size: clamp(34px, 9vw, 54px);
+  font-weight: 900;
+  color: #ffe66d;
+  text-shadow: 0 0 25px rgba(255, 230, 109, 0.35);
+}
+
+.level-up-card p {
+  color: #e4e5ff;
+  font-size: 16px;
+}
+
+#level-up-close {
+  margin-top: 20px;
+  padding: 14px 28px;
+  border: 0;
+  border-radius: 12px;
+  background: #ffe66d;
+  color: #17142f;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@keyframes levelUpPop {
+  from { transform: scale(.75) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes levelUpSpin {
+  0%, 100% { transform: rotate(0) scale(1); }
+  50% { transform: rotate(20deg) scale(1.15); }
+}
