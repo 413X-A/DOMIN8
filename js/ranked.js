@@ -1,15 +1,28 @@
 "use strict";
 
 /* =========================================================
-   FILLER: COLOR FILL — RANKED
-   Supabase matchmaking + Realtime + Elo rating
+   FILLER — LIVE RANKED
+   Gemeinsames Spielfeld, 1v1, 120 Sekunden
+
+   Serverfunktionen:
+   - join_ranked_live_queue
+   - leave_ranked_live_queue
+   - get_current_ranked_live_match
+   - get_ranked_live_match
+   - submit_ranked_live_move
+   - get_ranked_leaderboard
+
+   Besitzregel:
+   Eine eroberte Zelle hat dauerhaft einen Besitzer.
+   Fremde Gebiete können nicht zurückerobert werden.
    ========================================================= */
 
 (() => {
-    const BOARD_SIZE = 10;
-    const COLOR_COUNT = 6;
-    const MOVE_LIMIT = 25;
-    const POLL_INTERVAL_MS = 2500;
+    const POLL_INTERVAL_MS = 1000;
+    const QUEUE_INTERVAL_MS = 2200;
+    const TOTAL_MATCH_MS = 120000;
+
+    const $ = id => document.getElementById(id);
 
     const COLORS = [
         "#ef476f",
@@ -17,10 +30,48 @@
         "#06d6a0",
         "#118ab2",
         "#9b5de5",
-        "#f15bb5"
+        "#f15bb5",
+        "#ff7b00",
+        "#80ed99"
     ];
 
-    const $ = id => document.getElementById(id);
+    const FALLBACK_BORDER_COLORS = [
+        "#56e0ff",
+        "#ff66c4",
+        "#ffd166",
+        "#80ed99",
+        "#c4b5fd"
+    ];
+
+    let db = null;
+    let user = null;
+    let playerName = "Spieler";
+
+    let searching = false;
+    let movePending = false;
+    let resultShown = false;
+
+    let currentMatch = null;
+    let currentPlayers = [];
+    let matchChannel = null;
+
+    let queueTimer = null;
+    let pollTimer = null;
+    let clockTimer = null;
+
+    let boardColors = [];
+    let boardOwners = [];
+
+    let stateVersion = -1;
+    let lastRenderedVersion = -1;
+
+    let refreshPending = false;
+    let lastRefreshAt = 0;
+    let countdownTriggered = false;
+
+    // =====================================================
+    // 1. SUPABASE
+    // =====================================================
 
     function getClient() {
         if (
@@ -41,32 +92,14 @@
         return null;
     }
 
-    let db = null;
-    let user = null;
-    let displayName = "Spieler";
+    function getErrorMessage(error) {
+        return error?.message ||
+            String(error || "Unbekannter Fehler");
+    }
 
-    let currentMatch = null;
-    let matchChannel = null;
-
-    let searching = false;
-    let resultSubmitted = false;
-    let gameEnded = false;
-    let resultShown = false;
-
-    let queueTimer = null;
-    let matchTimer = null;
-    let clockTimer = null;
-
-    let board = [];
-    let ownedCells = new Set();
-
-    let movesUsed = 0;
-    let matchStartedAt = 0;
-    let currentOpponentProgress = null;
-
-    // -----------------------------------------------------
-    // UI-HILFSFUNKTIONEN
-    // -----------------------------------------------------
+    // =====================================================
+    // 2. UI-HILFSFUNKTIONEN
+    // =====================================================
 
     function setText(id, value) {
         const element = $(id);
@@ -76,19 +109,21 @@
         }
     }
 
-    function setStatus(message, isError = false) {
+    function show(id, visible) {
+        const element = $(id);
+
+        if (element) {
+            element.hidden = !visible;
+        }
+    }
+
+    function setGlobalStatus(message, isError = false) {
         const element = $("ranked-global-status");
 
         if (!element) return;
 
         element.textContent = message;
         element.classList.toggle("is-error", isError);
-    }
-
-    function show(element, visible = true) {
-        if (element) {
-            element.hidden = !visible;
-        }
     }
 
     function formatNumber(value) {
@@ -99,6 +134,16 @@
             : "0";
     }
 
+    function formatPercent(value) {
+        const number = Number(value ?? 0);
+
+        return `${(
+            Number.isFinite(number) ? number : 0
+        ).toLocaleString("de-DE", {
+            maximumFractionDigits: 1
+        })} %`;
+    }
+
     function formatSigned(value) {
         const number = Number(value ?? 0);
 
@@ -107,108 +152,101 @@
         }
 
         if (number > 0) return `+${number}`;
+
         return String(number);
     }
 
-    function formatTime(milliseconds) {
-        const totalSeconds = Math.max(
+    function formatClock(milliseconds) {
+        const seconds = Math.max(
             0,
-            Math.floor(milliseconds / 1000)
+            Math.ceil(milliseconds / 1000)
         );
 
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
+        const minutes = Math.floor(seconds / 60);
+        const rest = seconds % 60;
 
         return (
             String(minutes).padStart(2, "0") +
             ":" +
-            String(seconds).padStart(2, "0")
+            String(rest).padStart(2, "0")
         );
     }
 
-    function getOpponentId(match) {
-        if (!match || !user) return null;
-
-        return match.player1_id === user.id
-            ? match.player2_id
-            : match.player1_id;
-    }
-
-    function isPlayerOne() {
-        return currentMatch?.player1_id === user?.id;
-    }
-
-    function getOpponentSubmitted(match) {
-        return match.player1_id === user.id
-            ? match.player2_moves !== null
-            : match.player1_moves !== null;
-    }
-
-    function getOwnSubmitted(match) {
-        return match.player1_id === user.id
-            ? match.player1_moves !== null
-            : match.player2_moves !== null;
-    }
-
-    function stopQueueTimer() {
-        if (queueTimer) {
+    function stopTimer(name) {
+        if (name === "queue" && queueTimer !== null) {
             clearTimeout(queueTimer);
             queueTimer = null;
         }
-    }
 
-    function stopMatchTimer() {
-        if (matchTimer) {
-            clearInterval(matchTimer);
-            matchTimer = null;
+        if (name === "poll" && pollTimer !== null) {
+            clearInterval(pollTimer);
+            pollTimer = null;
         }
-    }
 
-    function stopClockTimer() {
-        if (clockTimer) {
+        if (name === "clock" && clockTimer !== null) {
             clearInterval(clockTimer);
             clockTimer = null;
         }
     }
 
-    async function removeMatchChannel() {
-        if (!matchChannel || !db) return;
+    function stopAllTimers() {
+        stopTimer("queue");
+        stopTimer("poll");
+        stopTimer("clock");
+    }
 
+    async function removeMatchChannel() {
         const channel = matchChannel;
+
         matchChannel = null;
+
+        if (!channel || !db) return;
 
         try {
             await db.removeChannel(channel);
         } catch (error) {
             console.warn(
-                "[Ranked] Realtime-Kanal konnte nicht geschlossen werden:",
+                "[Ranked] Realtime-Kanal konnte nicht entfernt werden:",
                 error
             );
         }
     }
 
-    // -----------------------------------------------------
-    // PROFIL UND RATING LADEN
-    // -----------------------------------------------------
+    // =====================================================
+    // 3. SPIELER UND PROFIL
+    // =====================================================
 
-    async function loadOwnName() {
-        const fallback =
-            user?.user_metadata?.username ||
-            user?.user_metadata?.display_name ||
-            user?.email?.split("@")[0] ||
+    async function loadPlayerIdentity() {
+        const {
+            data,
+            error
+        } = await db.auth.getUser();
+
+        if (error) throw error;
+
+        user = data?.user || null;
+
+        if (!user) {
+            window.location.href = "../index.html";
+            return false;
+        }
+
+        playerName =
+            user.user_metadata?.username ||
+            user.user_metadata?.display_name ||
+            user.email?.split("@")[0] ||
             "Spieler";
 
-        displayName = fallback;
-
         try {
-            const { data, error } = await db
-                .from("profiles")
-                .select("username")
-                .eq("id", user.id)
-                .maybeSingle();
+            const { data: profile, error: profileError } =
+                await db
+                    .from("profiles")
+                    .select("username")
+                    .eq("id", user.id)
+                    .maybeSingle();
 
-            if (!error && data?.username) {
-                displayName = data.username;
+            if (!profileError && profile?.username) {
+                playerName = profile.username;
             }
         } catch (error) {
             console.warn(
@@ -216,9 +254,17 @@
                 error
             );
         }
+
+        return true;
     }
 
+    // =====================================================
+    // 4. RATING-STATISTIK
+    // =====================================================
+
     async function loadPlayerStats() {
+        if (!user) return;
+
         const { data, error } = await db
             .from("ranked_player_stats")
             .select(
@@ -229,7 +275,7 @@
 
         if (error) {
             console.error(
-                "[Ranked] Rating konnte nicht geladen werden:",
+                "[Ranked] Statistik konnte nicht geladen werden:",
                 error
             );
 
@@ -251,92 +297,69 @@
         setText("ranked-draws", stats.draws);
     }
 
-    async function loadOpponentName(opponentId) {
-        const fallback = opponentId
-            ? `Spieler ${opponentId.slice(0, 6)}`
-            : "Gegner";
-
-        try {
-            const { data, error } = await db
-                .from("profiles")
-                .select("username")
-                .eq("id", opponentId)
-                .maybeSingle();
-
-            if (!error && data?.username) {
-                return data.username;
-            }
-        } catch (error) {
-            console.warn(
-                "[Ranked] Gegnername konnte nicht geladen werden:",
-                error
-            );
-        }
-
-        return fallback;
-    }
-
-    // -----------------------------------------------------
-    // LEADERBOARD
-    // -----------------------------------------------------
+    // =====================================================
+    // 5. LEADERBOARD
+    // =====================================================
 
     async function loadLeaderboard() {
         const container = $("ranked-leaderboard");
 
         if (!container) return;
 
-        container.replaceChildren();
-
         const { data, error } = await db.rpc(
             "get_ranked_leaderboard"
         );
 
+        container.replaceChildren();
+
         if (error) {
-            const paragraph = document.createElement("p");
+            const message = document.createElement("p");
 
-            paragraph.className = "ranked-leaderboard-empty";
-            paragraph.textContent =
-                "Die Rangliste ist noch nicht verfügbar. " +
-                "Prüfe die SQL-Funktion get_ranked_leaderboard.";
+            message.className = "muted";
+            message.textContent =
+                "Die Rangliste ist momentan nicht verfügbar.";
 
-            container.appendChild(paragraph);
+            container.appendChild(message);
 
             console.warn(
-                "[Ranked] Leaderboard konnte nicht geladen werden:",
+                "[Ranked] Leaderboard-Fehler:",
                 error
             );
 
             return;
         }
 
-        const rows = Array.isArray(data) ? data : [];
+        if (!Array.isArray(data) || data.length === 0) {
+            const message = document.createElement("p");
 
-        if (rows.length === 0) {
-            const paragraph = document.createElement("p");
-
-            paragraph.className = "ranked-leaderboard-empty";
-            paragraph.textContent =
+            message.className = "muted";
+            message.textContent =
                 "Noch keine Ranked-Spieler vorhanden.";
 
-            container.appendChild(paragraph);
+            container.appendChild(message);
+
             return;
         }
 
-        rows.forEach((player, index) => {
+        data.forEach((player, index) => {
             const row = document.createElement("div");
+
             row.className = "ranked-leaderboard-row";
 
             const place = document.createElement("div");
+
             place.className = "ranked-leaderboard-place";
             place.textContent = `#${index + 1}`;
 
             const identity = document.createElement("div");
 
             const name = document.createElement("div");
+
             name.className = "ranked-leaderboard-name";
             name.textContent = player.username || "Spieler";
 
             const record = document.createElement("div");
+
             record.className = "ranked-leaderboard-record";
             record.textContent =
                 `${formatNumber(player.wins)} Siege · ` +
@@ -346,17 +369,173 @@
             identity.append(name, record);
 
             const rating = document.createElement("div");
+
             rating.className = "ranked-leaderboard-rating";
             rating.textContent = formatNumber(player.rating);
 
             row.append(place, identity, rating);
+
             container.appendChild(row);
         });
     }
 
-    // -----------------------------------------------------
-    // MATCHMAKING
-    // -----------------------------------------------------
+    // =====================================================
+    // 6. SPIELER DES MATCHES
+    // =====================================================
+
+    function getSelfParticipant() {
+        if (!user) return null;
+
+        return currentPlayers.find(
+            item => item.user_id === user.id
+        ) || null;
+    }
+
+    function getOpponentParticipant() {
+        if (!user) return null;
+
+        return currentPlayers.find(
+            item => item.user_id !== user.id
+        ) || null;
+    }
+
+    function getOwnerDisplayClass(ownerId) {
+        if (!ownerId) return "owner-empty";
+
+        return ownerId === user.id
+            ? "owner-self"
+            : "owner-opponent";
+    }
+
+    function getSpawnClass(row, col) {
+        const self = getSelfParticipant();
+        const opponent = getOpponentParticipant();
+
+        if (
+            self &&
+            Number(self.spawn_row) === row &&
+            Number(self.spawn_col) === col
+        ) {
+            return "spawn-self";
+        }
+
+        if (
+            opponent &&
+            Number(opponent.spawn_row) === row &&
+            Number(opponent.spawn_col) === col
+        ) {
+            return "spawn-opponent";
+        }
+
+        return "";
+    }
+
+    function getPlayerBorderColor(player) {
+        if (player?.player_border_color) {
+            return player.player_border_color;
+        }
+
+        const slot = Math.max(
+            1,
+            Number(player?.slot) || 1
+        );
+
+        return FALLBACK_BORDER_COLORS[
+            (slot - 1) % FALLBACK_BORDER_COLORS.length
+        ];
+    }
+
+    // =====================================================
+    // 7. BOARD AUS SERVERZUSTAND
+    // =====================================================
+
+    function validateBoardState(match) {
+        let colors = match.board_colors;
+        let owners = match.board_owners;
+
+        if (typeof colors === "string") {
+            colors = JSON.parse(colors);
+        }
+
+        if (typeof owners === "string") {
+            owners = JSON.parse(owners);
+        }
+
+        const size = Number(match.board_size);
+        const colorCount = Number(match.color_count);
+
+        if (
+            !Number.isInteger(size) ||
+            size < 2 ||
+            size > 18
+        ) {
+            throw new Error("Ungültige Board-Größe.");
+        }
+
+        if (
+            !Number.isInteger(colorCount) ||
+            colorCount < 2 ||
+            colorCount > COLORS.length
+        ) {
+            throw new Error("Ungültige Farbanzahl.");
+        }
+
+        if (
+            !Array.isArray(colors) ||
+            colors.length !== size ||
+            !Array.isArray(owners) ||
+            owners.length !== size
+        ) {
+            throw new Error("Das gemeinsame Board ist ungültig.");
+        }
+
+        for (let row = 0; row < size; row++) {
+            if (
+                !Array.isArray(colors[row]) ||
+                colors[row].length !== size ||
+                !Array.isArray(owners[row]) ||
+                owners[row].length !== size
+            ) {
+                throw new Error(
+                    `Zeile ${row + 1} ist unvollständig.`
+                );
+            }
+
+            for (let col = 0; col < size; col++) {
+                const color = Number(colors[row][col]);
+
+                if (
+                    !Number.isInteger(color) ||
+                    color < 0 ||
+                    color >= colorCount
+                ) {
+                    throw new Error(
+                        `Ungültige Farbe in Feld ${row + 1}/${col + 1}.`
+                    );
+                }
+
+                const owner = owners[row][col];
+
+                if (
+                    owner !== null &&
+                    typeof owner !== "string"
+                ) {
+                    throw new Error(
+                        `Ungültiger Besitzer in Feld ${row + 1}/${col + 1}.`
+                    );
+                }
+            }
+        }
+
+        return {
+            colors,
+            owners
+        };
+    }
+
+    // =====================================================
+    // 8. MATCHMAKING
+    // =====================================================
 
     async function startSearch() {
         if (searching || currentMatch?.status === "active") {
@@ -364,10 +543,13 @@
         }
 
         searching = true;
-        stopQueueTimer();
 
-        show($("ranked-search-indicator"), true);
-        show($("ranked-cancel-search"), true);
+        stopTimer("queue");
+
+        show("ranked-search-indicator", true);
+        show("ranked-cancel-search", true);
+        show("ranked-match-panel", false);
+        show("ranked-search-panel", true);
 
         const button = $("ranked-find-button");
 
@@ -378,10 +560,10 @@
         setText("ranked-search-title", "Suche läuft");
         setText(
             "ranked-search-detail",
-            "Wir suchen einen echten Spieler."
+            "Warte auf einen anderen Spieler …"
         );
 
-        setStatus("Du bist in der Ranked-Warteschlange.");
+        setGlobalStatus("Du bist in der Ranked-Warteschlange.");
 
         await queryQueue();
     }
@@ -391,16 +573,19 @@
 
         try {
             const { data, error } = await db.rpc(
-                "join_ranked_queue"
+                "join_ranked_live_queue",
+                { p_mode: "1v1" }
             );
 
-            if (error) {
-                throw error;
-            }
+            if (error) throw error;
 
             if (data?.status === "matched" && data.match) {
                 searching = false;
-                stopQueueTimer();
+
+                stopTimer("queue");
+
+                show("ranked-search-indicator", false);
+                show("ranked-cancel-search", false);
 
                 const button = $("ranked-find-button");
 
@@ -408,10 +593,7 @@
                     button.disabled = false;
                 }
 
-                show($("ranked-cancel-search"), false);
-                show($("ranked-search-indicator"), false);
-
-                await startMatch(data.match);
+                await acceptMatchPayload(data);
                 return;
             }
 
@@ -422,18 +604,18 @@
 
             setText(
                 "ranked-search-detail",
-                "Sobald ein anderer Spieler sucht, startet das Match."
+                "Das Match startet, sobald ein zweiter Spieler gefunden wird."
             );
 
-            setStatus("Wartet auf einen zweiten Spieler …");
+            setGlobalStatus("Suche nach einem echten Gegner …");
         } catch (error) {
             console.error(
                 "[Ranked] Matchmaking fehlgeschlagen:",
                 error
             );
 
-            setStatus(
-                `Matchmaking-Fehler: ${error.message || error}`,
+            setGlobalStatus(
+                `Matchmaking fehlgeschlagen: ${getErrorMessage(error)}`,
                 true
             );
         }
@@ -441,7 +623,7 @@
         if (searching) {
             queueTimer = setTimeout(
                 queryQueue,
-                POLL_INTERVAL_MS
+                QUEUE_INTERVAL_MS
             );
         }
     }
@@ -450,7 +632,11 @@
         if (!searching) return;
 
         searching = false;
-        stopQueueTimer();
+
+        stopTimer("queue");
+
+        show("ranked-search-indicator", false);
+        show("ranked-cancel-search", false);
 
         const button = $("ranked-find-button");
 
@@ -458,278 +644,310 @@
             button.disabled = false;
         }
 
-        show($("ranked-cancel-search"), false);
-        show($("ranked-search-indicator"), false);
-
         try {
             const { error } = await db.rpc(
-                "leave_ranked_queue"
+                "leave_ranked_live_queue"
             );
 
-            if (error) {
-                throw error;
-            }
+            if (error) throw error;
 
-            setStatus("Matchmaking abgebrochen.");
+            setGlobalStatus("Ranked-Suche abgebrochen.");
         } catch (error) {
             console.error(
                 "[Ranked] Warteschlange konnte nicht verlassen werden:",
                 error
             );
 
-            setStatus(
-                "Die Warteschlange konnte nicht verlassen werden. " +
-                "Bitte erneut versuchen.",
+            setGlobalStatus(
+                `Warteschlange: ${getErrorMessage(error)}`,
                 true
             );
         }
     }
 
-    // -----------------------------------------------------
-    // LAUFENDES MATCH WIEDERHERSTELLEN
-    // -----------------------------------------------------
+    // =====================================================
+    // 9. MATCH WIEDERHERSTELLEN
+    // =====================================================
 
-    async function restoreActiveMatch() {
-        try {
-            const { data, error } = await db.rpc(
-                "get_current_ranked_match"
-            );
+    async function restoreCurrentMatch() {
+        const { data, error } = await db.rpc(
+            "get_current_ranked_live_match"
+        );
 
-            if (error) {
-                throw error;
-            }
+        if (error) {
+            throw error;
+        }
 
-            if (data?.status === "active") {
-                await startMatch(data);
-                setStatus("Dein laufendes Ranked-Match wurde geladen.");
-                return true;
-            }
-        } catch (error) {
-            console.warn(
-                "[Ranked] Kein Match wiederhergestellt:",
-                error
-            );
+        if (data?.status === "active" && data.match) {
+            await acceptMatchPayload(data);
+            return true;
         }
 
         return false;
     }
 
-    // -----------------------------------------------------
-    // MATCH STARTEN
-    // -----------------------------------------------------
-
-    async function startMatch(match) {
-        if (!match?.id || !user) {
-            setStatus(
-                "Das Match konnte nicht geladen werden.",
-                true
-            );
-            return;
+    async function acceptMatchPayload(payload) {
+        if (!payload?.match) {
+            throw new Error("Das Match enthält keine Kartendaten.");
         }
 
+        await applyServerState(payload);
+
+        if (currentMatch?.status === "active") {
+            show("ranked-search-panel", false);
+            show("ranked-match-panel", true);
+
+            await startRealtime();
+            startPolling();
+            startClock();
+
+            setGlobalStatus("Du spielst live gegen deinen Gegner.");
+        } else if (currentMatch?.status === "completed") {
+            await displayCompletedResult();
+        }
+    }
+
+    // =====================================================
+    // 10. SERVERZUSTAND ANWENDEN
+    // =====================================================
+
+    async function applyServerState(payload) {
+        const incomingMatch = payload?.match || payload;
+
+        if (!incomingMatch?.id) {
+            throw new Error("Ungültiger Matchstatus.");
+        }
+
+        const incomingVersion = Number(
+            incomingMatch.state_version ?? 0
+        );
+
+        /*
+         * Veraltete Antworten dürfen einen neueren Spielstand
+         * nicht überschreiben.
+         */
         if (
-            currentMatch &&
-            currentMatch.id === match.id &&
-            currentMatch.status === "active"
+            currentMatch?.id === incomingMatch.id &&
+            incomingVersion < stateVersion
         ) {
             return;
         }
 
-        await removeMatchChannel();
-        stopQueueTimer();
-        stopMatchTimer();
-        stopClockTimer();
+        const newMatch =
+            !currentMatch ||
+            currentMatch.id !== incomingMatch.id;
 
-        currentMatch = match;
+        if (newMatch) {
+            currentMatch = null;
 
-        resultSubmitted = getOwnSubmitted(match);
-        gameEnded = resultSubmitted;
-        resultShown = false;
+            stateVersion = -1;
+            lastRenderedVersion = -1;
 
-        movesUsed = 0;
-        currentOpponentProgress = null;
+            resultShown = false;
+            movePending = false;
 
-        const startTime = Date.parse(match.started_at);
-
-        matchStartedAt = Number.isFinite(startTime)
-            ? startTime
-            : Date.now();
-
-        show($("ranked-search-panel"), false);
-        show($("ranked-match-panel"), true);
-        show($("ranked-match-result"), false);
-        show($("ranked-waiting-result"), resultSubmitted);
-
-        setText("ranked-match-title", "Match läuft");
-        setText("ranked-me-name", displayName);
-        setText(
-            "ranked-me-rating",
-            `Rating ${$("ranked-rating")?.textContent || "1000"}`
-        );
-
-        setText(
-            "ranked-move-limit",
-            match.move_limit || MOVE_LIMIT
-        );
-
-        const opponentId = getOpponentId(match);
-
-        const opponentName = await loadOpponentName(opponentId);
-
-        if (!currentMatch || currentMatch.id !== match.id) {
-            return;
+            await removeMatchChannel();
+            stopTimer("poll");
+            stopTimer("clock");
         }
 
-        setText("ranked-opponent-name", opponentName);
-        setText("ranked-opponent-rating", "Ranked-Spieler");
+        currentMatch = incomingMatch;
 
-        if (isPlayerOne()) {
-            setText("ranked-me-name", displayName);
-            setText("ranked-opponent-name", opponentName);
-        } else {
-            setText("ranked-me-name", displayName);
-            setText("ranked-opponent-name", opponentName);
+        if (Array.isArray(payload?.players)) {
+            currentPlayers = payload.players;
         }
 
-        try {
-            initializeBoardFromMatch(match);
+        const parsed = validateBoardState(currentMatch);
+
+        boardColors = parsed.colors;
+        boardOwners = parsed.owners;
+
+        const versionChanged =
+            incomingVersion !== lastRenderedVersion;
+
+        stateVersion = incomingVersion;
+
+        if (newMatch || versionChanged) {
             renderBoard();
             renderColorPicker();
-            updateGameStats();
-        } catch (error) {
-            console.error(
-                "[Ranked] Board konnte nicht initialisiert werden:",
-                error
-            );
 
-            setStatus(
-                `Ungültige Ranked-Karte: ${error.message || error}`,
-                true
-            );
-
-            return;
+            lastRenderedVersion = incomingVersion;
         }
 
-        setStatus("Du spielst jetzt gegen einen echten Gegner.");
+        updatePlayerCards();
+        updateGameCounters();
+        updateColorPickerSelection();
 
-        if (resultSubmitted) {
-            disableGameControls();
-            show($("ranked-waiting-result"), true);
+        if (newMatch) {
+            const self = getSelfParticipant();
 
-            setText(
-                "ranked-waiting-detail",
-                "Dein Ergebnis wurde bereits abgegeben. " +
-                "Wir warten auf den Gegner."
-            );
+            setText("ranked-match-title", "Gebietskampf");
+
+            setText("ranked-match-time", "02:00");
+
+            setText("ranked-game-status", "Wähle deine nächste Farbe.");
+
+            show("ranked-search-panel", false);
+            show("ranked-match-panel", true);
+        }
+
+        if (currentMatch.status === "completed") {
+            await displayCompletedResult();
         } else {
-            setText(
-                "ranked-game-status",
-                "Fülle die Karte, bevor dein Gegner fertig ist."
-            );
+            show("ranked-match-result", false);
         }
-
-        startRealtime(match.id);
-        startMatchPolling(match.id);
-        startClock();
-
-        sendLiveProgress();
     }
 
-    function initializeBoardFromMatch(match) {
-        let raw = match.map_data;
+    // =====================================================
+    // 11. SPIELERKARTEN
+    // =====================================================
 
-        if (typeof raw === "string") {
-            raw = JSON.parse(raw);
+    function updatePlayerCards() {
+        const self = getSelfParticipant();
+        const opponent = getOpponentParticipant();
+
+        if (!self) return;
+
+        const size = Number(currentMatch?.board_size) || 12;
+        const total = size * size;
+
+        const selfOwned = Number(self.owned_cells) || 0;
+        const opponentOwned = Number(opponent?.owned_cells) || 0;
+
+        setText("ranked-me-name", playerName);
+
+        setText(
+            "ranked-opponent-name",
+            opponent?.username || "Gegner"
+        );
+
+        setText(
+            "ranked-me-rating",
+            `Rating ${formatNumber(self.rating_before)}`
+        );
+
+        setText(
+            "ranked-opponent-rating",
+            `Rating ${formatNumber(opponent?.rating_before)}`
+        );
+
+        setText("ranked-me-owned", selfOwned);
+        setText("ranked-opponent-owned", opponentOwned);
+
+        setText(
+            "ranked-me-progress",
+            `${formatPercent(selfOwned / total * 100)} des Boards`
+        );
+
+        setText(
+            "ranked-opponent-progress",
+            `${formatPercent(opponentOwned / total * 100)} des Boards`
+        );
+
+        const meBar = $("ranked-me-progress-bar");
+        const opponentBar = $("ranked-opponent-progress-bar");
+
+        if (meBar) {
+            meBar.style.width =
+                `${Math.min(100, selfOwned / total * 100)}%`;
         }
 
-        if (
-            !Array.isArray(raw) ||
-            raw.length !== Number(match.board_size)
-        ) {
-            throw new Error("Die Kartenhöhe stimmt nicht.");
+        if (opponentBar) {
+            opponentBar.style.width =
+                `${Math.min(100, opponentOwned / total * 100)}%`;
         }
 
-        board = raw.map(row => {
-            const values = typeof row === "string"
-                ? Array.from(row).map(Number)
-                : row.map(Number);
+        $("ranked-me-name")?.closest(".ranked-player-card")
+            ?.classList.add("player-self");
 
-            if (values.length !== Number(match.board_size)) {
-                throw new Error("Eine Kartenzeile ist ungültig.");
-            }
-
-            if (
-                values.some(value =>
-                    !Number.isInteger(value) ||
-                    value < 0 ||
-                    value >= Number(match.color_count)
-                )
-            ) {
-                throw new Error("Die Karte enthält ungültige Farben.");
-            }
-
-            return values;
-        });
-
-        ownedCells = new Set(["0,0"]);
+        $("ranked-opponent-name")?.closest(".ranked-player-card")
+            ?.classList.add("player-opponent");
     }
 
-    // -----------------------------------------------------
-    // SPIELBRETT
-    // -----------------------------------------------------
+    // =====================================================
+    // 12. SPIELFELD RENDERN
+    // =====================================================
 
     function renderBoard() {
-        const element = $("ranked-board");
+        const container = $("ranked-board");
 
-        if (!element || !currentMatch) return;
+        if (!container || !currentMatch) return;
 
         const size = Number(currentMatch.board_size);
 
-        element.replaceChildren();
+        container.replaceChildren();
 
-        element.style.gridTemplateColumns =
-            `repeat(${size}, minmax(0, 1fr))`;
-
-        element.style.gridTemplateRows =
-            `repeat(${size}, minmax(0, 1fr))`;
+        container.style.setProperty(
+            "--ranked-board-size",
+            String(size)
+        );
 
         const fragment = document.createDocumentFragment();
+
+        const self = getSelfParticipant();
+        const opponent = getOpponentParticipant();
 
         for (let row = 0; row < size; row++) {
             for (let col = 0; col < size; col++) {
                 const cell = document.createElement("div");
-                const key = `${row},${col}`;
-                const color = board[row][col];
+
+                const color = Number(boardColors[row][col]);
+                const owner = boardOwners[row][col];
 
                 cell.className = "ranked-cell";
-
                 cell.style.backgroundColor =
                     COLORS[color] || "#6c757d";
 
-                if (ownedCells.has(key)) {
-                    cell.classList.add("owned");
+                cell.classList.add(
+                    getOwnerDisplayClass(owner)
+                );
+
+                const spawnClass = getSpawnClass(row, col);
+
+                if (spawnClass) {
+                    cell.classList.add(spawnClass);
+                }
+
+                if (owner && self && owner === self.user_id) {
+                    cell.style.borderColor =
+                        getPlayerBorderColor(self);
+                } else if (
+                    owner &&
+                    opponent &&
+                    owner === opponent.user_id
+                ) {
+                    cell.style.borderColor =
+                        getPlayerBorderColor(opponent);
                 }
 
                 cell.setAttribute(
                     "aria-label",
-                    `Zeile ${row + 1}, Spalte ${col + 1}`
+                    `Zeile ${row + 1}, Spalte ${col + 1}, ` +
+                    `Farbe ${color + 1}, ` +
+                    (owner
+                        ? owner === user.id
+                            ? "dein Gebiet"
+                            : "Gebiet des Gegners"
+                        : "freies Feld")
                 );
 
                 fragment.appendChild(cell);
             }
         }
 
-        element.appendChild(fragment);
+        container.appendChild(fragment);
     }
 
+    // =====================================================
+    // 13. FARBWAHL
+    // =====================================================
+
     function renderColorPicker() {
-        const element = $("ranked-color-picker");
+        const container = $("ranked-color-picker");
 
-        if (!element || !currentMatch || !board.length) {
-            return;
-        }
+        if (!container || !currentMatch) return;
 
-        element.replaceChildren();
+        container.replaceChildren();
 
         const count = Number(currentMatch.color_count);
 
@@ -738,302 +956,103 @@
 
             button.type = "button";
             button.className = "ranked-color-button";
-            button.style.backgroundColor = COLORS[color];
+
+            button.style.backgroundColor =
+                COLORS[color] || "#6c757d";
+
+            button.dataset.color = String(color);
+
             button.title = `Farbe ${color + 1}`;
+
             button.setAttribute(
                 "aria-label",
-                `Farbe ${color + 1}`
+                `Farbe ${color + 1} auswählen`
             );
 
             button.addEventListener("click", () => {
-                selectColor(color);
+                void submitMove(color);
             });
 
-            element.appendChild(button);
+            container.appendChild(button);
         }
 
         updateColorPickerSelection();
     }
 
     function updateColorPickerSelection() {
-        const element = $("ranked-color-picker");
+        const container = $("ranked-color-picker");
 
-        if (!element || !board.length) return;
+        if (!container) return;
 
-        const currentColor = board[0][0];
+        const self = getSelfParticipant();
 
-        element
+        const currentColor = self
+            ? Number(self.current_color)
+            : -1;
+
+        container
             .querySelectorAll(".ranked-color-button")
-            .forEach((button, index) => {
-                const selected = index === currentColor;
+            .forEach(button => {
+                const color = Number(button.dataset.color);
 
-                button.classList.toggle("selected", selected);
+                button.classList.toggle(
+                    "selected",
+                    color === currentColor
+                );
+
                 button.disabled =
-                    gameEnded ||
-                    resultSubmitted ||
-                    selected;
+                    movePending ||
+                    !currentMatch ||
+                    currentMatch.status !== "active" ||
+                    color === currentColor;
             });
     }
 
-    // -----------------------------------------------------
-    // FLOOD FILL
-    // -----------------------------------------------------
+    // =====================================================
+    // 14. ECHTEN ZUG AUF DEM SERVER AUSFÜHREN
+    // =====================================================
 
-    function selectColor(color) {
+    async function submitMove(color) {
         if (
+            movePending ||
             !currentMatch ||
-            currentMatch.status !== "active" ||
-            gameEnded ||
-            resultSubmitted
-        ) {
-            return;
-        }
-
-        if (
-            !Number.isInteger(color) ||
-            color < 0 ||
-            color >= currentMatch.color_count
-        ) {
-            return;
-        }
-
-        if (color === board[0][0]) {
-            return;
-        }
-
-        movesUsed++;
-
-        floodFill(color);
-        renderBoard();
-        updateGameStats();
-        updateColorPickerSelection();
-        sendLiveProgress();
-
-        const total = board.length * board.length;
-
-        if (
-            ownedCells.size >= total ||
-            movesUsed >= Number(currentMatch.move_limit)
-        ) {
-            void submitRankedResult();
-        }
-    }
-
-    function floodFill(color) {
-        const size = board.length;
-        const queue = [];
-        const visited = new Set();
-
-        /*
-         * Das bisherige Gebiet wird auf die neue Farbe gesetzt.
-         */
-        for (const key of ownedCells) {
-            const [row, col] = key.split(",").map(Number);
-
-            board[row][col] = color;
-            queue.push({ row, col });
-            visited.add(key);
-        }
-
-        let index = 0;
-
-        while (index < queue.length) {
-            const current = queue[index++];
-
-            const neighbors = [
-                { row: current.row - 1, col: current.col },
-                { row: current.row + 1, col: current.col },
-                { row: current.row, col: current.col - 1 },
-                { row: current.row, col: current.col + 1 }
-            ];
-
-            for (const neighbor of neighbors) {
-                const row = neighbor.row;
-                const col = neighbor.col;
-
-                if (
-                    row < 0 ||
-                    col < 0 ||
-                    row >= size ||
-                    col >= size
-                ) {
-                    continue;
-                }
-
-                const key = `${row},${col}`;
-
-                if (visited.has(key)) continue;
-
-                visited.add(key);
-
-                if (board[row][col] !== color) {
-                    continue;
-                }
-
-                ownedCells.add(key);
-                board[row][col] = color;
-
-                queue.push({ row, col });
-            }
-        }
-
-        /*
-         * Alle beanspruchten Felder auf die neue Farbe setzen.
-         */
-        for (const key of ownedCells) {
-            const [row, col] = key.split(",").map(Number);
-
-            board[row][col] = color;
-        }
-    }
-
-    // -----------------------------------------------------
-    // LIVE-FORTSCHRITT
-    // -----------------------------------------------------
-
-    function getFilledPercent() {
-        if (!board.length) return 0;
-
-        const total = board.length * board.length;
-
-        return total > 0
-            ? ownedCells.size / total * 100
-            : 0;
-    }
-
-    function updateGameStats() {
-        if (!currentMatch) return;
-
-        const total = board.length * board.length;
-        const percent = getFilledPercent();
-
-        setText("ranked-moves", movesUsed);
-        setText("ranked-filled", ownedCells.size);
-        setText("ranked-total", total);
-
-        const ownPercent = $("ranked-me-progress");
-        const ownBar = $("ranked-me-progress-bar");
-
-        if (ownPercent) {
-            ownPercent.textContent =
-                `${percent.toLocaleString("de-DE", {
-                    maximumFractionDigits: 1
-                })} % gefüllt`;
-        }
-
-        if (ownBar) {
-            ownBar.style.width = `${percent}%`;
-        }
-    }
-
-    function sendLiveProgress() {
-        if (!currentMatch || !matchChannel) return;
-
-        const payload = {
-            userId: user.id,
-            moves: movesUsed,
-            percent: Number(getFilledPercent().toFixed(2)),
-            completed: ownedCells.size >=
-                board.length * board.length
-        };
-
-        matchChannel.send({
-            type: "broadcast",
-            event: "progress",
-            payload
-        }).catch(error => {
-            console.warn(
-                "[Ranked] Live-Fortschritt konnte nicht gesendet werden:",
-                error
-            );
-        });
-    }
-
-    function handleOpponentProgress(payload) {
-        if (
-            !payload ||
-            payload.userId === user.id ||
-            !currentMatch
-        ) {
-            return;
-        }
-
-        currentOpponentProgress = payload;
-
-        const percent = Math.max(
-            0,
-            Math.min(100, Number(payload.percent) || 0)
-        );
-
-        setText(
-            "ranked-opponent-progress",
-            `${percent.toLocaleString("de-DE", {
-                maximumFractionDigits: 1
-            })} % · ${formatNumber(payload.moves)} Züge`
-        );
-
-        const bar = $("ranked-opponent-progress-bar");
-
-        if (bar) {
-            bar.style.width = `${percent}%`;
-        }
-    }
-
-    // -----------------------------------------------------
-    // ERGEBNIS ABGEBEN
-    // -----------------------------------------------------
-
-    async function submitRankedResult() {
-        if (
-            !currentMatch ||
-            resultSubmitted ||
             currentMatch.status !== "active"
         ) {
             return;
         }
 
-        resultSubmitted = true;
-        gameEnded = true;
+        const self = getSelfParticipant();
 
-        disableGameControls();
+        if (!self) {
+            setGlobalStatus(
+                "Dein Spielerstatus wurde nicht geladen.",
+                true
+            );
 
-        show($("ranked-waiting-result"), true);
+            return;
+        }
 
-        setText(
-            "ranked-waiting-detail",
-            "Dein Ergebnis wird gespeichert. " +
-            "Danach warten wir auf deinen Gegner."
-        );
+        if (Number(color) === Number(self.current_color)) {
+            return;
+        }
 
-        setText(
-            "ranked-game-status",
-            "Du hast dein Ergebnis abgegeben."
-        );
+        const remaining =
+            Date.parse(currentMatch.ends_at) - Date.now();
 
-        const total = board.length * board.length;
-        const completed = ownedCells.size >= total;
-        const percent = Number(getFilledPercent().toFixed(2));
+        if (remaining <= 0) {
+            await refreshMatch();
+            return;
+        }
 
-        /*
-         * Zeit seit dem serverseitigen Matchstart.
-         */
-        const durationMs = Math.max(
-            0,
-            Date.now() - matchStartedAt
-        );
+        movePending = true;
+        updateColorPickerSelection();
 
         try {
             const { data, error } = await db.rpc(
-                "submit_ranked_result",
+                "submit_ranked_live_move",
                 {
                     p_match_id: currentMatch.id,
-                    p_moves: Math.max(1, movesUsed),
-                    p_duration_ms: Math.min(
-                        1800000,
-                        Math.floor(durationMs)
-                    ),
-                    p_completed: completed,
-                    p_filled_percent: percent
+                    p_color: color
                 }
             );
 
@@ -1041,274 +1060,201 @@
                 throw error;
             }
 
-            if (data?.id === currentMatch.id) {
-                handleMatchUpdate(data);
-            }
+            await applyServerState(data);
 
-            if (data?.status === "completed") {
-                handleMatchUpdate(data);
-            } else {
+            if (currentMatch?.status === "active") {
                 setText(
-                    "ranked-waiting-detail",
-                    "Ergebnis gespeichert. Wenn dein Gegner sein " +
-                    "Ergebnis abgibt, wird das Match ausgewertet. " +
-                    "Bei ausbleibender Abgabe greift der 90-Sekunden-Timeout."
+                    "ranked-game-status",
+                    "Gebiet aktualisiert. Du kannst die nächste Farbe wählen."
                 );
             }
         } catch (error) {
             console.error(
-                "[Ranked] Ergebnis konnte nicht gespeichert werden:",
+                "[Ranked] Zug konnte nicht verarbeitet werden:",
                 error
             );
 
+            setText(
+                "ranked-game-status",
+                `Zug nicht angenommen: ${getErrorMessage(error)}`
+            );
+
             /*
-             * Wiederholungsmöglichkeit erzeugen.
+             * Bei einem Konflikt oder Zeitablauf aktuellen
+             * Zustand neu vom Server laden.
              */
-            resultSubmitted = false;
-            gameEnded = true;
-
-            setText(
-                "ranked-waiting-detail",
-                `Speichern fehlgeschlagen: ${error.message || error}`
-            );
-
-            let retry = $("ranked-retry-submit");
-
-            if (!retry) {
-                retry = document.createElement("button");
-                retry.id = "ranked-retry-submit";
-                retry.type = "button";
-                retry.className = "ranked-secondary-button";
-                retry.textContent = "ERGEBNIS ERNEUT SENDEN";
-
-                $("ranked-waiting-result")?.appendChild(retry);
-            }
-
-            retry.hidden = false;
-            retry.onclick = () => {
-                retry.hidden = true;
-                void submitRankedResult();
-            };
-        }
-
-        sendLiveProgress();
-    }
-
-    function disableGameControls() {
-        const picker = $("ranked-color-picker");
-
-        if (picker) {
-            picker
-                .querySelectorAll("button")
-                .forEach(button => {
-                    button.disabled = true;
-                });
+            await refreshMatch();
+        } finally {
+            movePending = false;
+            updateColorPickerSelection();
         }
     }
 
-    // -----------------------------------------------------
-    // REALTIME UND MATCH-POLLING
-    // -----------------------------------------------------
+    // =====================================================
+    // 15. BOARD- UND MATCHSTATUS AKTUALISIEREN
+    // =====================================================
 
-    function startRealtime(matchId) {
-        if (!db || !matchId) return;
-
-        const channel = db.channel(
-            `ranked-${matchId}-${user.id}`,
-            {
-                config: {
-                    broadcast: {
-                        self: false
-                    }
-                }
-            }
-        );
-
-        channel
-            .on(
-                "broadcast",
-                { event: "progress" },
-                message => {
-                    handleOpponentProgress(message.payload);
-                }
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "UPDATE",
-                    schema: "public",
-                    table: "ranked_matches",
-                    filter: `id=eq.${matchId}`
-                },
-                payload => {
-                    if (payload.new) {
-                        handleMatchUpdate(payload.new);
-                    }
-                }
-            )
-            .subscribe(status => {
-                if (status === "SUBSCRIBED") {
-                    console.info(
-                        "[Ranked] Realtime verbunden:",
-                        matchId
-                    );
-                }
-            });
-
-        matchChannel = channel;
-    }
-
-    function startMatchPolling(matchId) {
-        stopMatchTimer();
-
-        /*
-         * Auch ohne Realtime-Ereignis wird der Matchstatus geprüft.
-         * Die RPC prüft zugleich, ob ein Ergebnis-Timeout abgelaufen ist.
-         */
-        matchTimer = setInterval(async () => {
-            if (
-                !currentMatch ||
-                currentMatch.id !== matchId ||
-                currentMatch.status !== "active"
-            ) {
-                return;
-            }
-
-            try {
-                const { data, error } = await db.rpc(
-                    "get_ranked_match",
-                    {
-                        p_match_id: matchId
-                    }
-                );
-
-                if (error) {
-                    throw error;
-                }
-
-                if (data) {
-                    handleMatchUpdate(data);
-                }
-            } catch (error) {
-                console.warn(
-                    "[Ranked] Matchstatus konnte nicht aktualisiert werden:",
-                    error
-                );
-            }
-        }, POLL_INTERVAL_MS);
-    }
-
-    function startClock() {
-        stopClockTimer();
-
-        const update = () => {
-            if (!currentMatch) return;
-
-            setText(
-                "ranked-match-time",
-                formatTime(Date.now() - matchStartedAt)
-            );
-        };
-
-        update();
-
-        clockTimer = setInterval(update, 1000);
-    }
-
-    // -----------------------------------------------------
-    // MATCHSTATUS UND ENDERGEBNIS
-    // -----------------------------------------------------
-
-    function handleMatchUpdate(match) {
+    async function refreshMatch() {
         if (
-            !match ||
-            !currentMatch ||
-            match.id !== currentMatch.id
+            refreshPending ||
+            !currentMatch?.id
         ) {
             return;
         }
 
-        currentMatch = {
-            ...currentMatch,
-            ...match
-        };
+        refreshPending = true;
 
-        if (currentMatch.status === "completed") {
-            void showCompletedMatch(currentMatch);
-            return;
-        }
-
-        if (currentMatch.status !== "active") {
-            return;
-        }
-
-        const ownSubmitted = getOwnSubmitted(currentMatch);
-        const opponentSubmitted = getOpponentSubmitted(currentMatch);
-
-        if (ownSubmitted) {
-            resultSubmitted = true;
-            gameEnded = true;
-
-            disableGameControls();
-
-            show($("ranked-waiting-result"), true);
-
-            setText(
-                "ranked-waiting-detail",
-                opponentSubmitted
-                    ? "Beide Ergebnisse liegen vor. Das Match wird ausgewertet."
-                    : "Dein Ergebnis ist gespeichert. Wir warten auf den Gegner."
+        try {
+            const { data, error } = await db.rpc(
+                "get_ranked_live_match",
+                {
+                    p_match_id: currentMatch.id
+                }
             );
-        } else if (opponentSubmitted) {
-            setText(
-                "ranked-game-status",
-                "Dein Gegner hat sein Ergebnis abgegeben. " +
-                "Beende dein Spiel, um das Match auszuwerten."
+
+            if (error) throw error;
+
+            if (data) {
+                await applyServerState(data);
+            }
+        } catch (error) {
+            console.warn(
+                "[Ranked] Spielstatus konnte nicht aktualisiert werden:",
+                error
             );
+        } finally {
+            refreshPending = false;
+            lastRefreshAt = Date.now();
         }
     }
 
-    async function showCompletedMatch(match) {
-        if (resultShown) return;
+    // =====================================================
+    // 16. REALTIME
+    // =====================================================
+
+    async function startRealtime() {
+        if (!db || !currentMatch?.id || matchChannel) {
+            return;
+        }
+
+        const matchId = currentMatch.id;
+
+        const channel = db.channel(
+            `ranked-live-${matchId}-${user.id}`
+        );
+
+        channel.on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "ranked_live_matches",
+                filter: `id=eq.${matchId}`
+            },
+            () => {
+                /*
+                 * Das Event signalisiert eine Änderung.
+                 * Der komplette autoritative Zustand wird
+                 * über die geprüfte RPC abgefragt.
+                 */
+                void refreshMatch();
+            }
+        );
+
+        channel.subscribe(status => {
+            if (status === "SUBSCRIBED") {
+                console.info(
+                    "[Ranked] Realtime verbunden.",
+                    matchId
+                );
+            }
+
+            if (status === "CHANNEL_ERROR") {
+                console.warn(
+                    "[Ranked] Realtime-Verbindung fehlgeschlagen. " +
+                    "Polling bleibt aktiv."
+                );
+            }
+        });
+
+        matchChannel = channel;
+    }
+
+    // =====================================================
+    // 17. LIVE-POLLING
+    // Serverzeit entscheidet über das Ende nach 120s.
+    // =====================================================
+
+    function startPolling() {
+        stopTimer("poll");
+
+        pollTimer = setInterval(() => {
+            if (!currentMatch || currentMatch.status !== "active") {
+                return;
+            }
+
+            void refreshMatch();
+        }, POLL_INTERVAL_MS);
+    }
+
+    function startClock() {
+        stopTimer("clock");
+
+        const update = () => {
+            if (!currentMatch) return;
+
+            const endTime = Date.parse(currentMatch.ends_at);
+
+            const remaining = Number.isFinite(endTime)
+                ? Math.max(0, endTime - Date.now())
+                : 0;
+
+            setText(
+                "ranked-match-time",
+                formatClock(remaining)
+            );
+
+            if (remaining <= 0 && !countdownTriggered) {
+                countdownTriggered = true;
+                void refreshMatch();
+            }
+        };
+
+        countdownTriggered = false;
+
+        update();
+
+        clockTimer = setInterval(update, 200);
+    }
+
+    // =====================================================
+    // 18. MATCH ERGEBNIS
+    // =====================================================
+
+    async function displayCompletedResult() {
+        if (resultShown || !currentMatch) return;
 
         resultShown = true;
-        currentMatch = match;
 
-        stopMatchTimer();
-        stopClockTimer();
-        stopQueueTimer();
+        stopTimer("poll");
+        stopTimer("clock");
+        stopTimer("queue");
 
         await removeMatchChannel();
 
-        show($("ranked-match-result"), true);
-        show($("ranked-waiting-result"), false);
+        show("ranked-search-panel", false);
+        show("ranked-match-panel", true);
+        show("ranked-match-result", true);
+        show("ranked-waiting-result", false);
 
-        disableGameControls();
+        const self = getSelfParticipant();
+        const opponent = getOpponentParticipant();
 
-        const winnerId = match.winner_id;
-        const draw = match.is_draw === true;
+        const draw = currentMatch.is_draw === true;
 
-        const won = winnerId === user.id;
-
-        const myMoves = isPlayerOne()
-            ? match.player1_moves
-            : match.player2_moves;
-
-        const opponentMoves = isPlayerOne()
-            ? match.player2_moves
-            : match.player1_moves;
-
-        const myFill = isPlayerOne()
-            ? match.player1_fill_percent
-            : match.player2_fill_percent;
-
-        const opponentFill = isPlayerOne()
-            ? match.player2_fill_percent
-            : match.player1_fill_percent;
-
-        const myRatingChange = isPlayerOne()
-            ? match.player1_rating_change
-            : match.player2_rating_change;
+        const myWon =
+            !draw &&
+            currentMatch.winner_id === user.id;
 
         let title;
         let icon;
@@ -1316,11 +1262,11 @@
         if (draw) {
             title = "Unentschieden";
             icon = "🤝";
-        } else if (won) {
+        } else if (myWon) {
             title = "Du hast gewonnen!";
             icon = "🏆";
         } else {
-            title = "Match verloren";
+            title = "Du hast verloren";
             icon = "🎮";
         }
 
@@ -1329,72 +1275,77 @@
 
         setText(
             "ranked-result-description",
-            `Dein Füllstand: ${Number(myFill ?? 0).toLocaleString(
-                "de-DE",
-                { maximumFractionDigits: 1 }
-            )} %. ` +
-            `Füllstand des Gegners: ${Number(
-                opponentFill ?? 0
-            ).toLocaleString("de-DE", {
-                maximumFractionDigits: 1
-            })} %.`
+            currentMatch.finish_reason === "board_full"
+                ? "Alle Felder wurden erobert."
+                : "Die 120 Sekunden sind abgelaufen."
         );
 
         setText(
-            "ranked-result-my-moves",
-            myMoves == null ? "—" : myMoves
+            "ranked-result-my-owned",
+            self?.owned_cells ?? 0
         );
 
         setText(
-            "ranked-result-opponent-moves",
-            opponentMoves == null ? "—" : opponentMoves
+            "ranked-result-opponent-owned",
+            opponent?.owned_cells ?? 0
         );
 
         setText(
             "ranked-result-rating",
-            formatSigned(myRatingChange)
+            formatSigned(self?.rating_change)
         );
 
-        setStatus(
+        setText(
+            "ranked-match-title",
+            "Match beendet"
+        );
+
+        setGlobalStatus(
             draw
-                ? "Ranked-Match beendet: Unentschieden."
-                : won
-                    ? "Ranked-Match beendet: Sieg!"
-                    : "Ranked-Match beendet: Niederlage."
+                ? "Ranked beendet: Unentschieden."
+                : myWon
+                    ? "Ranked beendet: Sieg!"
+                    : "Ranked beendet: Niederlage."
         );
-
-        setText("ranked-match-title", "Match beendet");
 
         await loadPlayerStats();
         await loadLeaderboard();
+
+        const playAgainButton = $("ranked-play-again");
+
+        if (playAgainButton) {
+            playAgainButton.disabled = false;
+        }
     }
 
-    // -----------------------------------------------------
-    // NAVIGATION / NEUES MATCH
-    // -----------------------------------------------------
+    // =====================================================
+    // 19. NEUES MATCH
+    // =====================================================
 
     async function playAgain() {
+        if (searching) return;
+
         await removeMatchChannel();
 
-        stopMatchTimer();
-        stopClockTimer();
-        stopQueueTimer();
+        stopAllTimers();
 
         currentMatch = null;
-        board = [];
-        ownedCells = new Set();
+        currentPlayers = [];
 
-        movesUsed = 0;
-        resultSubmitted = false;
-        gameEnded = false;
+        boardColors = [];
+        boardOwners = [];
+
+        stateVersion = -1;
+        lastRenderedVersion = -1;
+
+        movePending = false;
         resultShown = false;
+        countdownTriggered = false;
 
-        searching = false;
-
-        show($("ranked-match-panel"), false);
-        show($("ranked-search-panel"), true);
-        show($("ranked-match-result"), false);
-        show($("ranked-waiting-result"), false);
+        show("ranked-match-panel", false);
+        show("ranked-match-result", false);
+        show("ranked-waiting-result", false);
+        show("ranked-search-panel", true);
 
         const button = $("ranked-find-button");
 
@@ -1406,16 +1357,28 @@
         await startSearch();
     }
 
-    // -----------------------------------------------------
-    // INITIALISIERUNG
-    // -----------------------------------------------------
+    // =====================================================
+    // 20. MENÜ
+    // =====================================================
+
+    async function backToMenu() {
+        if (searching) {
+            await cancelSearch();
+        }
+
+        window.location.href = "menu.html";
+    }
+
+    // =====================================================
+    // 21. INITIALISIERUNG
+    // =====================================================
 
     async function initialize() {
         db = getClient();
 
-        if (!db || !db.auth) {
-            setStatus(
-                "Supabase ist nicht initialisiert. " +
+        if (!db?.auth) {
+            setGlobalStatus(
+                "Supabase wurde nicht initialisiert. " +
                 "Prüfe config.js und supabase.js.",
                 true
             );
@@ -1424,31 +1387,22 @@
         }
 
         try {
-            const { data, error } = await db.auth.getUser();
+            const authenticated = await loadPlayerIdentity();
 
-            if (error) throw error;
+            if (!authenticated) return;
 
-            user = data?.user || null;
-
-            if (!user) {
-                setStatus(
-                    "Bitte melde dich an, um Ranked zu spielen.",
-                    true
-                );
-
-                window.location.href = "../index.html";
-                return;
-            }
-
-            await loadOwnName();
             await loadPlayerStats();
             await loadLeaderboard();
 
-            const foundMatch = await restoreActiveMatch();
+            /*
+             * Falls der Spieler die Seite im laufenden Match
+             * erneut öffnet, wird dasselbe gemeinsame Board geladen.
+             */
+            const restored = await restoreCurrentMatch();
 
-            if (!foundMatch) {
-                setStatus(
-                    "Bereit für Ranked. Suche einen Gegner, um zu starten."
+            if (!restored) {
+                setGlobalStatus(
+                    "Bereit. Suche einen Gegner, um ein Ranked-Match zu starten."
                 );
             }
         } catch (error) {
@@ -1457,16 +1411,16 @@
                 error
             );
 
-            setStatus(
-                `Ranked konnte nicht geladen werden: ${error.message || error}`,
+            setGlobalStatus(
+                `Ranked konnte nicht geladen werden: ${getErrorMessage(error)}`,
                 true
             );
         }
     }
 
-    // -----------------------------------------------------
-    // EVENTS
-    // -----------------------------------------------------
+    // =====================================================
+    // 22. EVENTS
+    // =====================================================
 
     $("ranked-find-button")?.addEventListener(
         "click",
@@ -1480,16 +1434,12 @@
 
     $("ranked-back-button")?.addEventListener(
         "click",
-        () => {
-            window.location.href = "menu.html";
-        }
+        () => void backToMenu()
     );
 
     $("ranked-result-menu")?.addEventListener(
         "click",
-        () => {
-            window.location.href = "menu.html";
-        }
+        () => void backToMenu()
     );
 
     $("ranked-play-again")?.addEventListener(
@@ -1498,15 +1448,17 @@
     );
 
     window.addEventListener("beforeunload", () => {
-        stopQueueTimer();
-        stopMatchTimer();
-        stopClockTimer();
-
+        stopAllTimers();
         /*
-         * Ein aktives Match wird beim Verlassen NICHT automatisch
-         * abgebrochen. Ein Wiederaufruf kann es wiederherstellen.
+         * Kein automatischer Spielabbruch:
+         * Das Match kann bei erneuter Anmeldung wiederhergestellt
+         * werden.
          */
     });
+
+    // =====================================================
+    // 23. START
+    // =====================================================
 
     if (document.readyState === "loading") {
         document.addEventListener(
