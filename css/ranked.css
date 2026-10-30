@@ -1,0 +1,956 @@
+/* =========================================================
+   FILLER – COLOR FILL
+   RANKED LIVE — GLOBAL UI THEME
+   ========================================================= */
+
+.ranked-page {
+    width: min(100%, var(--menu-width, 560px));
+    max-width: var(--menu-width, 560px);
+    min-width: 0;
+
+    margin: 0 auto;
+
+    padding:
+        calc(24px + var(--safe-top))
+        calc(20px + var(--safe-right))
+        calc(84px + var(--safe-bottom))
+        calc(20px + var(--safe-left));
+}
+
+.ranked-page [hidden] {
+    display: none !important;
+}
+
+
+/* ---------- STATUS ---------- */
+
+.ranked-global-status {
+    margin: 0 0 16px;
+    text-align: left;
+}
+
+.ranked-global-status.is-error {
+    color: var(--danger);
+}
+
+
+/* ---------- STATS ---------- */
+
+.ranked-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.ranked-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 14px;
+}
+
+.ranked-stat span {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.ranked-stat strong {
+    color: var(--text);
+    font-size: 21px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ---------- PANELS ---------- */
+
+.ranked-panel {
+    margin-bottom: 16px;
+}
+
+.ranked-panel h1,
+.ranked-panel h2 {
+    margin: 8px 0 10px;
+    font-weight: 900;
+    letter-spacing: -0.055em;
+    line-height: 1.1;
+}
+
+.ranked-panel h1 {
+    font-size: clamp(25px, 5vw, 36px);
+}
+
+.ranked-panel h2 {
+    font-size: 23px;
+}
+
+.ranked-description {
+    max-width: 660px;
+    margin: 0 0 23px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* ---------- RULES ---------- */
+
+.ranked-rules {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin: 20px 0;
+}
+
+.ranked-rules > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--surface-light);
+}
+
+.ranked-rule-symbol {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.ranked-rules strong {
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.ranked-rules small {
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+
+/* ---------- BUTTONS ---------- */
+
+.ranked-primary-button,
+.ranked-secondary-button {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 13px 17px;
+    border-radius: var(--radius-small);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        color var(--transition),
+        transform var(--transition);
+}
+
+.ranked-primary-button {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.ranked-primary-button:hover:not(:disabled) {
+    filter: brightness(0.94);
+    transform: translateY(-1px);
+}
+
+.ranked-secondary-button {
+    margin-top: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.ranked-secondary-button:hover:not(:disabled) {
+    border-color: var(--border-hover);
+    background: var(--surface-light);
+    color: var(--text);
+}
+
+.ranked-primary-button:active:not(:disabled),
+.ranked-secondary-button:active:not(:disabled) {
+    transform: scale(0.99);
+}
+
+.ranked-footnote {
+    margin: 17px 0 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+
+/* ---------- INLINE LOADING ---------- */
+
+.ranked-inline-status {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--surface-light);
+}
+
+.ranked-inline-status strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+
+.ranked-inline-status p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.ranked-spinner {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    border: 2px solid var(--border-hover);
+    border-top-color: var(--text);
+    border-radius: 50%;
+    animation: ranked-spin 0.8s linear infinite;
+}
+
+@keyframes ranked-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ---------- MATCH HEADER ---------- */
+
+.ranked-match-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.ranked-match-header h1 {
+    margin-bottom: 0;
+}
+
+.ranked-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--surface-light);
+}
+
+.ranked-clock span {
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.ranked-clock strong {
+    color: var(--text);
+    font-size: 21px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ---------- PLAYERS ---------- */
+
+.ranked-versus {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 22px;
+}
+
+.ranked-player-card {
+    --player-border-color: var(--border-hover);
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--player-border-color);
+    border-radius: var(--radius-medium);
+    background: var(--surface-light);
+}
+
+.ranked-player-card.player-self {
+    --player-border-color: #56e0ff;
+}
+
+.ranked-player-card.player-opponent {
+    --player-border-color: #ff66c4;
+}
+
+.ranked-player-label {
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+}
+
+.ranked-player-card > strong {
+    overflow-wrap: anywhere;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.ranked-player-card > small {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.ranked-player-score {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin: 5px 0 2px;
+}
+
+.ranked-player-score strong {
+    font-size: 24px;
+    font-weight: 950;
+    font-variant-numeric: tabular-nums;
+}
+
+.ranked-player-score span {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.ranked-versus-mark {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 950;
+    letter-spacing: 0.08em;
+}
+
+.ranked-progress-track {
+    height: 5px;
+    overflow: hidden;
+    margin-top: 3px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ranked-progress-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #56e0ff;
+    transition: width 150ms linear;
+}
+
+.ranked-progress-fill.opponent-fill {
+    background: #ff66c4;
+}
+
+.ranked-board-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 12px;
+}
+
+.ranked-board-heading > strong {
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.ranked-board-heading > span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.ranked-legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 6px;
+    border-radius: 50%;
+}
+
+.your-dot {
+    background: #56e0ff;
+}
+
+.enemy-dot {
+    background: #ff66c4;
+}
+
+
+/* ---------- SHARED BOARD ---------- */
+
+.ranked-board {
+    --ranked-board-size: 12;
+
+    display: grid;
+    grid-template-columns:
+        repeat(var(--ranked-board-size), minmax(0, 1fr));
+    grid-template-rows:
+        repeat(var(--ranked-board-size), minmax(0, 1fr));
+
+    width: min(100%, 610px);
+    aspect-ratio: 1;
+    gap: 2px;
+    padding: 4px;
+    margin: 0 auto;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+    background: #050509;
+}
+
+.ranked-cell {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+
+    transition:
+        background-color 100ms linear,
+        border-color 100ms linear,
+        box-shadow 100ms linear;
+}
+
+.ranked-cell.owner-self {
+    border: 2px solid #56e0ff;
+    box-shadow:
+        inset 0 0 0 1px rgba(86, 224, 255, 0.15),
+        0 0 2px rgba(86, 224, 255, 0.35);
+}
+
+.ranked-cell.owner-opponent {
+    border: 2px solid #ff66c4;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 102, 196, 0.15),
+        0 0 2px rgba(255, 102, 196, 0.35);
+}
+
+.ranked-cell.owner-empty {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.ranked-cell.spawn-self {
+    box-shadow:
+        inset 0 0 0 2px #ffffff,
+        0 0 8px rgba(86, 224, 255, 0.6);
+}
+
+.ranked-cell.spawn-opponent {
+    box-shadow:
+        inset 0 0 0 2px #ffffff,
+        0 0 8px rgba(255, 102, 196, 0.6);
+}
+
+
+/* ---------- GAME CONTROLS ---------- */
+
+.ranked-game-info {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 13px 0;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.ranked-game-info strong {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.ranked-color-picker {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin: 14px 0;
+}
+
+.ranked-color-button {
+    width: 39px;
+    height: 39px;
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-small);
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        opacity var(--transition);
+}
+
+.ranked-color-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.ranked-color-button.selected {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.ranked-game-status {
+    min-height: 20px;
+    margin: 12px 0 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+
+/* ---------- RESULT ---------- */
+
+.ranked-result {
+    margin-top: 23px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+    background: var(--surface-light);
+    text-align: center;
+}
+
+.ranked-result-icon {
+    margin-bottom: 8px;
+    font-size: 32px;
+}
+
+.ranked-result h2 {
+    margin: 7px 0;
+    font-size: 25px;
+}
+
+.ranked-result > p {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.ranked-result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin: 20px 0;
+}
+
+.ranked-result-stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    padding: 12px 7px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--surface);
+}
+
+.ranked-result-stats span {
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.ranked-result-stats strong {
+    overflow-wrap: anywhere;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+
+/* ---------- LEADERBOARD ---------- */
+
+.ranked-leaderboard-panel h2 {
+    margin-top: 7px;
+}
+
+.ranked-leaderboard-panel .ranked-description {
+    margin-bottom: 17px;
+}
+
+.ranked-leaderboard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ranked-leaderboard-row {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 11px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    background: var(--surface-light);
+}
+
+.ranked-leaderboard-place {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.ranked-leaderboard-name {
+    overflow-wrap: anywhere;
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.ranked-leaderboard-record {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.ranked-leaderboard-rating {
+    font-size: 14px;
+    font-weight: 950;
+    font-variant-numeric: tabular-nums;
+}
+
+.ranked-bottom-space {
+    height: 20px;
+}
+
+
+/* =========================================================
+   EIGENER SPIELER IM LEADERBOARD
+   ========================================================= */
+
+.ranked-leaderboard-row.is-current-player {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.14);
+    box-shadow:
+        0 0 0 1px rgba(34, 197, 94, 0.35),
+        0 6px 20px rgba(34, 197, 94, 0.12);
+}
+
+.ranked-leaderboard-row.is-current-player
+.ranked-leaderboard-name {
+    color: #22c55e;
+}
+
+.ranked-leaderboard-row.is-current-player
+.ranked-leaderboard-rating {
+    color: #22c55e;
+}
+
+/* "Du"-Badge */
+
+.ranked-leaderboard-you {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #22c55e;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* =========================================================
+   EIGENE PLATZIERUNG ÜBER DEN TOP 50
+   ========================================================= */
+
+.ranked-leaderboard-own-header {
+    margin-bottom: 8px;
+    color: #22c55e;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ranked-leaderboard-separator {
+    margin: 18px 0 10px;
+    padding: 8px 0;
+    color: #8b949e;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* Eigene Zeile außerhalb der Top 50 */
+
+.ranked-leaderboard-row.is-player-outside-top {
+    margin-bottom: 4px;
+}
+
+
+/* =========================================================
+   LEADERBOARD — TOP 3
+   ========================================================= */
+
+/* 🥇 PLATZ 1 — GOLD */
+
+.ranked-leaderboard-row.rank-1 {
+    border-color: #f5c542 !important;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(245, 197, 66, 0.18),
+            rgba(245, 197, 66, 0.06)
+        ) !important;
+    box-shadow:
+        0 0 0 1px rgba(245, 197, 66, 0.25),
+        0 6px 20px rgba(245, 197, 66, 0.12) !important;
+}
+
+.ranked-leaderboard-row.rank-1
+.ranked-leaderboard-place,
+
+.ranked-leaderboard-row.rank-1
+.ranked-leaderboard-name,
+
+.ranked-leaderboard-row.rank-1
+.ranked-leaderboard-rating {
+    color: #f5c542 !important;
+}
+
+
+/* 🥈 PLATZ 2 — SILBER */
+
+.ranked-leaderboard-row.rank-2 {
+    border-color: #c7cbd1 !important;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(199, 203, 209, 0.16),
+            rgba(199, 203, 209, 0.05)
+        ) !important;
+    box-shadow:
+        0 0 0 1px rgba(199, 203, 209, 0.2),
+        0 6px 18px rgba(199, 203, 209, 0.08) !important;
+}
+
+.ranked-leaderboard-row.rank-2
+.ranked-leaderboard-place,
+
+.ranked-leaderboard-row.rank-2
+.ranked-leaderboard-name,
+
+.ranked-leaderboard-row.rank-2
+.ranked-leaderboard-rating {
+    color: #c7cbd1 !important;
+}
+
+
+/* 🥉 PLATZ 3 — BRONZE */
+
+.ranked-leaderboard-row.rank-3 {
+    border-color: #cd7f32 !important;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(205, 127, 50, 0.16),
+            rgba(205, 127, 50, 0.05)
+        ) !important;
+    box-shadow:
+        0 0 0 1px rgba(205, 127, 50, 0.2),
+        0 6px 18px rgba(205, 127, 50, 0.08) !important;
+}
+
+.ranked-leaderboard-row.rank-3
+.ranked-leaderboard-place,
+
+.ranked-leaderboard-row.rank-3
+.ranked-leaderboard-name,
+
+.ranked-leaderboard-row.rank-3
+.ranked-leaderboard-rating {
+    color: #cd7f32 !important;
+}
+
+
+/* =========================================================
+   EIGENER SPIELER
+   ========================================================= */
+
+/*
+ * Grün gilt nur für Spieler außerhalb der Top 3.
+ *
+ * Dadurch kann ein Spieler auf Platz 1, 2 oder 3
+ * NIEMALS grün werden.
+ */
+
+.ranked-leaderboard-row.is-current-player:not(.rank-1):not(.rank-2):not(.rank-3) {
+    border-color: #22c55e !important;
+    background: rgba(34, 197, 94, 0.14) !important;
+    box-shadow:
+        0 0 0 1px rgba(34, 197, 94, 0.35),
+        0 6px 20px rgba(34, 197, 94, 0.12) !important;
+}
+
+.ranked-leaderboard-row.is-current-player:not(.rank-1):not(.rank-2):not(.rank-3)
+.ranked-leaderboard-name,
+
+.ranked-leaderboard-row.is-current-player:not(.rank-1):not(.rank-2):not(.rank-3)
+.ranked-leaderboard-rating {
+    color: #22c55e !important;
+}
+
+
+/* =========================================================
+   DU-BADGE
+   ========================================================= */
+
+.ranked-leaderboard-you {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #22c55e;
+    color: #ffffff !important;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 680px) {
+
+    .ranked-page {
+        width: min(100%, var(--menu-width, 560px));
+        max-width: var(--menu-width, 560px);
+
+        padding-top: calc(18px + var(--safe-top));
+        padding-right: calc(16px + var(--safe-right));
+        padding-left: calc(16px + var(--safe-left));
+    }
+
+    .ranked-stats {
+        gap: 7px;
+    }
+
+    .ranked-stat {
+        padding: 11px 8px;
+    }
+
+    .ranked-stat span {
+        font-size: 9px;
+    }
+
+    .ranked-stat strong {
+        font-size: 17px;
+    }
+
+    .ranked-versus {
+        gap: 6px;
+    }
+
+    .ranked-player-card {
+        padding: 11px 8px;
+    }
+
+    .ranked-player-card > strong {
+        font-size: 11px;
+    }
+
+    .ranked-player-score strong {
+        font-size: 21px;
+    }
+
+    .ranked-board {
+        gap: 1px;
+        padding: 3px;
+    }
+
+    .ranked-cell.owner-self,
+    .ranked-cell.owner-opponent {
+        border-width: 1px;
+    }
+}
+
+
+@media (max-width: 380px) {
+
+    .ranked-page {
+        width: calc(
+            100% - 18px - var(--safe-left) - var(--safe-right)
+        );
+    }
+
+    .ranked-rules > div {
+        padding: 10px 7px;
+    }
+
+    .ranked-rules small {
+        font-size: 9px;
+    }
+
+    .ranked-color-picker {
+        gap: 6px;
+    }
+
+    .ranked-color-button {
+        width: 34px;
+        height: 34px;
+    }
+
+    .ranked-board-heading > span {
+        font-size: 8px;
+    }
+}
+
+
+@media (hover: none) {
+
+    .ranked-primary-button:hover,
+    .ranked-secondary-button:hover,
+    .ranked-color-button:hover {
+        transform: none;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .ranked-page *,
+    .ranked-page *::before,
+    .ranked-page *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

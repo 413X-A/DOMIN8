@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Settings – Filler: Color Fill</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/global_ui.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    <link rel="stylesheet" href="../css/settings.css">
+    <link rel="stylesheet" href="../css/levelsystem.css">
+
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="global-header">
+
+        <button
+            id="global-back-button"
+            class="global-header-back"
+            type="button"
+            aria-label="Zurück zum Menü"
+            title="Zurück zum Menü"
+        >
+            ←
+        </button>
+
+
+        <div class="global-header-brand">
+
+            <div class="menu-logo">
+                FILLER
+            </div>
+
+            <div class="menu-subtitle">
+                COLOR FILL
+            </div>
+
+        </div>
+
+
+        <div class="global-header-rating">
+
+            <span class="global-header-rating-label">
+                RATING
+            </span>
+
+            <span
+                id="global-rating"
+                class="global-header-rating-value"
+            >
+                100
+            </span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         SETTINGS
+    ====================================================== -->
+
+    <main class="settings-page">
+
+        <section class="settings-container">
+
+
+            <!-- =================================================
+                 SETTINGS HEADER
+            ================================================== -->
+
+            <div class="settings-heading">
+
+                <h1>
+                    SETTINGS
+                </h1>
+
+                <p>
+                    Passe deine Spieleinstellungen an.
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SPIEL
+            ================================================== -->
+
+            <section class="settings-section">
+
+                <div class="settings-section-header">
+
+                    <h2>
+                        SPIEL
+                    </h2>
+
+                </div>
+
+
+                <div class="settings-list">
+
+
+                    <!-- ANIMATIONEN -->
+
+                    <div class="settings-row">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Animationen
+                            </strong>
+
+                            <span>
+                                Animationen während des Spiels anzeigen
+                            </span>
+
+                        </div>
+
+
+                        <label
+                            class="settings-switch"
+                            aria-label="Animationen aktivieren"
+                        >
+
+                            <input
+                                type="checkbox"
+                                id="setting-animations"
+                                checked
+                            >
+
+                            <span class="settings-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+
+                    <!-- SOUND -->
+
+                    <div class="settings-row">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Sound
+                            </strong>
+
+                            <span>
+                                Spielsounds aktivieren
+                            </span>
+
+                        </div>
+
+
+                        <label
+                            class="settings-switch"
+                            aria-label="Sound aktivieren"
+                        >
+
+                            <input
+                                type="checkbox"
+                                id="setting-sound"
+                                checked
+                            >
+
+                            <span class="settings-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+
+                    <!-- VIBRATION -->
+
+                    <div class="settings-row">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Vibration
+                            </strong>
+
+                            <span>
+                                Haptisches Feedback aktivieren
+                            </span>
+
+                        </div>
+
+
+                        <label
+                            class="settings-switch"
+                            aria-label="Vibration aktivieren"
+                        >
+
+                            <input
+                                type="checkbox"
+                                id="setting-vibration"
+                                checked
+                            >
+
+                            <span class="settings-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+
+                    <!-- AUTOMATISCHER NEUSTART -->
+
+                    <div class="settings-row">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Automatischer Neustart
+                            </strong>
+
+                            <span>
+                                Nach einem verlorenen Spiel automatisch neu starten
+                            </span>
+
+                        </div>
+
+
+                        <label
+                            class="settings-switch"
+                            aria-label="Automatischen Neustart aktivieren"
+                        >
+
+                            <input
+                                type="checkbox"
+                                id="setting-auto-restart"
+                            >
+
+                            <span class="settings-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 SPIELBRETT
+            ================================================== -->
+
+            <section class="settings-section">
+
+                <div class="settings-section-header">
+
+                    <h2>
+                        SPIELBRETT
+                    </h2>
+
+                </div>
+
+
+                <div class="settings-list">
+
+
+                    <!-- GITTER -->
+
+                    <div class="settings-row">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Gitter anzeigen
+                            </strong>
+
+                            <span>
+                                Das Raster des Spielfelds anzeigen
+                            </span>
+
+                        </div>
+
+
+                        <label
+                            class="settings-switch"
+                            aria-label="Gitter anzeigen"
+                        >
+
+                            <input
+                                type="checkbox"
+                                id="setting-grid"
+                                checked
+                            >
+
+                            <span class="settings-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+
+                    <!-- ZUG-HIGHLIGHT -->
+
+                    <div class="settings-row">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Zug-Highlight
+                            </strong>
+
+                            <span>
+                                Den aktuellen Zug deutlicher hervorheben
+                            </span>
+
+                        </div>
+
+
+                        <label
+                            class="settings-switch"
+                            aria-label="Zug-Highlight aktivieren"
+                        >
+
+                            <input
+                                type="checkbox"
+                                id="setting-move-highlight"
+                                checked
+                            >
+
+                            <span class="settings-slider"></span>
+
+                        </label>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 KONTO
+            ================================================== -->
+
+            <section class="settings-section">
+
+                <div class="settings-section-header">
+
+                    <h2>
+                        KONTO
+                    </h2>
+
+                </div>
+
+
+                <div class="settings-list">
+
+
+                    <!-- SPRACHE -->
+
+                    <div class="settings-row settings-row-static">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Sprache
+                            </strong>
+
+                            <span>
+                                Aktuelle Sprache der Anwendung
+                            </span>
+
+                        </div>
+
+
+                        <span class="settings-value">
+                            DE
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- ABMELDEN -->
+
+                    <div class="settings-row settings-row-action">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Abmelden
+                            </strong>
+
+                            <span>
+                                Von diesem Konto abmelden
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="settings-action-button"
+                            id="settings-logout"
+                            type="button"
+                        >
+                            ABMELDEN
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 INFORMATION
+            ================================================== -->
+
+            <section class="settings-section">
+
+                <div class="settings-section-header">
+
+                    <h2>
+                        INFORMATION
+                    </h2>
+
+                </div>
+
+
+                <div class="settings-list">
+
+
+                    <!-- VERSION -->
+
+                    <div class="settings-row settings-row-static">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Version
+                            </strong>
+
+                            <span>
+                                Aktuelle Version von Filler – Color Fill
+                            </span>
+
+                        </div>
+
+
+                        <span class="settings-value">
+                            1.0
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- DATENSCHUTZ -->
+
+                    <div class="settings-row settings-row-action">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Datenschutz
+                            </strong>
+
+                            <span>
+                                Informationen zum Umgang mit deinen Daten
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="settings-link-button"
+                            type="button"
+                        >
+                            ANZEIGEN
+                        </button>
+
+                    </div>
+
+
+
+                    <!-- IMPRESSUM -->
+
+                    <div class="settings-row settings-row-action">
+
+                        <div class="settings-row-content">
+
+                            <strong>
+                                Impressum
+                            </strong>
+
+                            <span>
+                                Rechtliche Informationen
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="settings-link-button"
+                            type="button"
+                        >
+                            ANZEIGEN
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         GLOBALER FOOTER
+    ====================================================== -->
+
+<footer class="profile-footer">
+
+    <div class="profile-footer-buttons">
+
+        <button
+            class="footer-button"
+            data-page="profile"
+            type="button"
+        >
+            PROFIL
+        </button>
+
+        <button
+            class="footer-button"
+            data-page="settings"
+            type="button"
+        >
+            ⛭
+        </button>
+
+        <button
+            class="footer-button"
+            data-page="menu"
+            type="button"
+        >
+            ⌂
+        </button>
+
+    </div>
+
+    <p>
+        FILLER – COLOR FILL
+    </p>
+
+</footer>
+
+
+
+    <!-- =====================================================
+         SCRIPTS
+    ====================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/global.js"></script>
+<script src="../js/levelsystem.js"></script>
+<script src="../js/menu.js"></script>
+<script src="../js/settings.js"></script>
+
+</body>
+
+</html>

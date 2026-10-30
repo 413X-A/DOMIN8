@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#08080c">
+    <title>Kampagnenlevel – Filler: Color Fill</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/global_ui.css">
+    <link rel="stylesheet" href="../css/game.css">
+    <link rel="stylesheet" href="../css/levelsystem.css">
+</head>
+<body>
+    <main class="game-page">
+        <header class="game-header">
+            <button id="back-button" class="icon-button" type="button"
+                    aria-label="Zurück zur Kampagne">←</button>
+
+            <div class="game-heading">
+                <h1 id="level-title">Kampagne wird geladen …</h1>
+                <p>Fülle das gesamte Spielfeld.</p>
+            </div>
+
+            <button id="reset-button" class="icon-button" type="button"
+                    aria-label="Level zurücksetzen">↻</button>
+        </header>
+
+        <section class="game-stats" aria-label="Spielstatistik">
+            <div class="stat-card">
+                <span>Züge</span>
+                <strong id="moves-counter">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Limit</span>
+                <strong id="move-limit">–</strong>
+            </div>
+            <div class="stat-card">
+                <span>Feld</span>
+                <strong id="filled-counter">Wird geladen …</strong>
+            </div>
+        </section>
+
+        <section class="board-section">
+            <div id="game-board" class="game-board"
+                 aria-label="Spielfeld" role="grid"></div>
+        </section>
+
+        <section class="color-section">
+            <h2>Farbe wählen</h2>
+            <div id="color-picker" class="color-picker"
+                 aria-label="Verfügbare Farben"></div>
+        </section>
+
+        <p id="campaign-load-error" role="alert" hidden></p>
+    </main>
+
+    <!-- =====================================================
+         GLOBALER FOOTER
+    ====================================================== -->
+
+<footer class="profile-footer">
+
+    <div class="profile-footer-buttons">
+
+        <button
+            class="footer-button"
+            data-page="profile"
+            type="button"
+        >
+            PROFIL
+        </button>
+
+        <button
+            class="footer-button"
+            data-page="settings"
+            type="button"
+        >
+            ⛭
+        </button>
+
+        <button
+            class="footer-button"
+            data-page="menu"
+            type="button"
+        >
+            ⌂
+        </button>
+
+    </div>
+
+    <p>
+        FILLER – COLOR FILL
+    </p>
+
+</footer>
+
+    <section id="game-result" class="result-overlay"
+             role="dialog" aria-modal="true"
+             aria-labelledby="result-title"
+             aria-describedby="result-description"
+             aria-hidden="true" hidden>
+        <div class="result-panel">
+            <div id="result-icon" class="result-icon">★</div>
+            <h2 id="result-title">Level abgeschlossen!</h2>
+            <p id="result-description">Gut gemacht!</p>
+
+            <div class="result-stars" aria-label="Sternebewertung">
+                <span id="result-star-1">☆</span>
+                <span id="result-star-2">☆</span>
+                <span id="result-star-3">☆</span>
+            </div>
+
+            <div class="result-stats">
+                <div class="result-stat">
+                    <span>Benötigte Züge</span>
+                    <strong id="result-moves">0</strong>
+                </div>
+                <div class="result-stat">
+                    <span>Erhaltene XP</span>
+                    <strong id="result-xp">0 XP</strong>
+                </div>
+            </div>
+
+            <p id="result-message" class="result-message" role="status"></p>
+
+            <button id="restart-result-button" class="primary-button"
+                    type="button">Nochmal spielen</button>
+
+            <button id="next-level-button" class="primary-button"
+                    type="button" hidden>Nächstes Level</button>
+
+            <button id="result-menu-button" class="secondary-button"
+                    type="button">Zur Kampagne</button>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/global.js"></script>
+    <script src="../js/levelsystem.js"></script>
+    <script src="../js/campaign_game.js"></script>
+</body>
+</html>

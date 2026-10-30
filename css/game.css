@@ -1,0 +1,683 @@
+
+/* =========================================
+   FILLER: COLOR FILL — GAME STYLES
+   Mobile-first, Touch-optimiert
+   ========================================= */
+
+.game-page {
+    width: 100%;
+    max-width: 560px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+
+    padding:
+        calc(24px + var(--safe-top, 0px))
+        20px
+        calc(80px + var(--safe-bottom, 0px));
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.game-header {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) 46px;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-button {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small, 12px);
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 22px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        background-color .18s ease,
+        transform .18s ease;
+}
+
+.icon-button:hover {
+    background: var(--surface-light);
+}
+
+.icon-button:active {
+    transform: scale(.95);
+}
+
+.game-heading {
+    min-width: 0;
+    text-align: center;
+}
+
+.game-heading h1 {
+    font-size: clamp(20px, 5vw, 28px);
+    font-weight: 900;
+    letter-spacing: -.04em;
+    overflow-wrap: anywhere;
+}
+
+.game-heading p {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   STATISTIK
+   ========================================= */
+
+.game-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.stat-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 6px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium, 14px);
+    background: var(--surface);
+    text-align: center;
+}
+
+.stat-card span {
+    color: var(--text-muted);
+    font-size: clamp(9px, 2.5vw, 11px);
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.stat-card strong {
+    font-size: clamp(15px, 4vw, 20px);
+    font-weight: 850;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================
+   SPIELFELD
+   ========================================= */
+
+.board-section {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.game-board {
+    --board-size: 5;
+
+    display: grid;
+    grid-template-columns: repeat(var(--board-size), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--board-size), minmax(0, 1fr));
+
+    width: min(100%, 520px);
+    aspect-ratio: 1 / 1;
+    gap: 2px;
+    padding: 4px;
+
+    border: 2px solid var(--border);
+    border-radius: var(--radius-medium, 14px);
+    background: var(--surface);
+
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.game-board,
+.game-board * {
+    box-sizing: border-box;
+}
+
+.game-cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid rgba(8, 8, 12, .7);
+    border-radius: 2px;
+
+    transition:
+        background-color .12s ease,
+        transform .12s ease;
+}
+
+.game-cell.owned {
+    z-index: 1;
+    outline: 2px solid rgba(255, 255, 255, .95);
+    outline-offset: -3px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18);
+}
+
+.game-cell.start-cell {
+    z-index: 2;
+    outline: 2px solid #fff;
+    outline-offset: -3px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, .2),
+        0 0 0 1px rgba(255, 255, 255, .25);
+}
+
+#game-board.play-board {
+    width: 100%;
+    max-width: 520px;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    justify-self: center;
+    box-sizing: border-box;
+    gap: 2px;
+    overflow: hidden;
+}
+
+#game-board.play-board .game-cell {
+    min-width: 0;
+    min-height: 0;
+    border-radius: 2px;
+}
+
+/* =========================================
+   FARBWAHL
+   Zentriert, quadratisch, maximal 6 pro Zeile
+   ========================================= */
+
+.color-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
+
+.color-section h2 {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+/* Klassischer Farbpicker, falls verwendet */
+
+.color-picker {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    align-items: stretch;
+}
+
+.color-button {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    padding: 0;
+
+    border: 3px solid transparent;
+    border-radius: 15px;
+    background-clip: padding-box;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .16),
+        0 2px 5px rgba(0, 0, 0, .16);
+
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        transform .15s ease,
+        opacity .15s ease,
+        border-color .15s ease,
+        box-shadow .15s ease;
+}
+
+.color-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.color-button:active:not(:disabled) {
+    transform: scale(.94);
+}
+
+.color-button.selected {
+    border-color: #fff;
+    box-shadow:
+        0 0 0 2px rgba(255, 255, 255, .24),
+        0 4px 12px rgba(0, 0, 0, .22);
+}
+
+.color-button:focus-visible {
+    outline: 3px solid var(--text, #fff);
+    outline-offset: 3px;
+}
+
+.color-button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* Tatsächlicher Farbpicker aus game.js / campaign_game.js */
+
+#color-picker {
+    --color-gap: 10px;
+    --color-columns: 6;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--color-gap);
+
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+#color-picker .color-option {
+    position: relative;
+    display: block;
+
+    flex: 0 0 calc(
+        (100% - (var(--color-columns) - 1) * var(--color-gap))
+        / var(--color-columns)
+    );
+
+    width: calc(
+        (100% - (var(--color-columns) - 1) * var(--color-gap))
+        / var(--color-columns)
+    );
+
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+
+    border: 3px solid transparent;
+    border-radius: 15px;
+    box-sizing: border-box;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .16),
+        0 2px 5px rgba(0, 0, 0, .18);
+
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        box-shadow .15s ease,
+        opacity .15s ease;
+}
+
+#color-picker .color-option:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+#color-picker .color-option:active:not(:disabled) {
+    transform: scale(.94);
+}
+
+#color-picker .color-option.selected {
+    border: 3px solid #fff;
+    outline: 2px solid rgba(30, 30, 35, .9);
+    outline-offset: 2px;
+
+    /* Hintergrundfarbe unverändert lassen */
+    background-color: inherit;
+    filter: none;
+    opacity: 1;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 255, 255, .25),
+        0 4px 12px rgba(0, 0, 0, .2);
+}
+
+#color-picker .color-option:focus-visible {
+    outline: 3px solid var(--text, #fff);
+    outline-offset: 4px;
+}
+
+#color-picker .color-option:disabled {
+    cursor: not-allowed;
+}
+
+/* =========================================
+   NEUSTART
+   ========================================= */
+
+.restart-button {
+    width: 100%;
+    min-height: 48px;
+    touch-action: manipulation;
+}
+
+/* =========================================
+   ERGEBNIS-OVERLAY
+   ========================================= */
+
+.result-overlay {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+
+    display: grid;
+    place-items: center;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    padding:
+        calc(16px + var(--safe-top, 0px))
+        16px
+        calc(16px + var(--safe-bottom, 0px));
+
+    background: rgba(5, 5, 9, .82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.result-overlay[hidden] {
+    display: none !important;
+}
+
+.result-panel {
+    width: min(100%, 420px);
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 26px 22px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-large, 22px);
+    background: var(--surface);
+    text-align: center;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .4);
+}
+
+.result-icon {
+    margin-bottom: 8px;
+    color: #ffd166;
+    font-size: 36px;
+}
+
+.result-panel h2 {
+    font-size: 25px;
+    font-weight: 900;
+    letter-spacing: -.04em;
+}
+
+.result-panel > p {
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.result-stars {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+    font-size: 38px;
+}
+
+.result-stars .star-active {
+    color: #ffd166;
+}
+
+.result-stars .star-inactive {
+    color: var(--text-muted);
+    opacity: .55;
+}
+
+.result-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.result-stat {
+    min-width: 0;
+    padding: 12px 8px;
+    border-radius: var(--radius-small, 12px);
+    background: var(--surface-light);
+}
+
+.result-stat span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.result-stat strong {
+    font-size: 16px;
+    overflow-wrap: anywhere;
+}
+
+.result-message {
+    min-height: 18px;
+}
+
+.result-panel button {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 10px;
+    touch-action: manipulation;
+}
+
+.result-panel button[hidden] {
+    display: none !important;
+}
+
+/* =========================================
+   KLEINE HANDYS
+   ========================================= */
+
+@media (max-width: 420px) {
+    .game-page {
+        padding-left: 12px;
+        padding-right: 12px;
+        gap: 15px;
+    }
+
+    .game-header {
+        grid-template-columns: 42px minmax(0, 1fr) 42px;
+        gap: 8px;
+    }
+
+    .icon-button {
+        width: 42px;
+        height: 42px;
+    }
+
+    .game-board {
+        gap: 1px;
+        padding: 3px;
+        border-width: 2px;
+    }
+
+    #game-board.play-board {
+        width: 100%;
+    }
+
+    .game-cell {
+        border-radius: 1px;
+    }
+
+    .game-cell.owned,
+    .game-cell.start-cell {
+        outline-offset: -2px;
+    }
+
+    .stat-card {
+        padding: 10px 4px;
+    }
+
+    .result-panel {
+        padding: 22px 18px;
+    }
+}
+
+/* Sehr kleine Displays: 4 quadratische Felder pro Zeile */
+
+@media (max-width: 360px) {
+    #color-picker {
+        --color-columns: 4;
+        --color-gap: 9px;
+    }
+
+    #color-picker .color-option {
+        border-radius: 14px;
+    }
+
+    .color-picker {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .color-button {
+        border-radius: 14px;
+    }
+}
+
+/* Normale Handys */
+
+@media (min-width: 361px) and (max-width: 600px) {
+    #color-picker {
+        --color-columns: 6;
+        --color-gap: 10px;
+    }
+}
+
+/* Tablets und Desktop */
+
+@media (min-width: 601px) {
+    #color-picker {
+        --color-columns: 6;
+        --color-gap: 10px;
+    }
+
+    .color-picker {
+        gap: 12px;
+    }
+
+    .color-button {
+        border-radius: 16px;
+    }
+
+    #color-picker .color-option {
+        border-radius: 16px;
+    }
+}
+
+/* Querformat mit niedriger Höhe: maximal 7 pro Zeile */
+
+@media (orientation: landscape) and (max-height: 520px) {
+    .game-page {
+        gap: 10px;
+        padding-top: 10px;
+        padding-bottom: 12px;
+    }
+
+    .game-header {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+    }
+
+    .icon-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .game-heading h1 {
+        font-size: 20px;
+    }
+
+    .game-stats {
+        gap: 6px;
+    }
+
+    .stat-card {
+        padding: 7px 5px;
+    }
+
+    .color-section {
+        gap: 8px;
+    }
+
+    #color-picker {
+        --color-columns: 7;
+        --color-gap: 8px;
+    }
+
+    .color-picker {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .color-button {
+        min-height: 0;
+        max-height: none;
+    }
+
+    #color-picker .color-option {
+        min-height: 0;
+        max-height: none;
+        border-radius: 12px;
+    }
+}
+
+/* Touch-Geräte: kein Hover-Springen */
+
+@media (hover: none) {
+    .color-button:hover:not(:disabled),
+    #color-picker .color-option:hover:not(:disabled) {
+        transform: none;
+    }
+}
+
+/* Bewegungsreduzierung */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

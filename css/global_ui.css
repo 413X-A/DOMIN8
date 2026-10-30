@@ -1,0 +1,423 @@
+/* =========================================================
+   FILLER – COLOR FILL
+   GLOBAL UI COMPONENTS
+========================================================= */
+
+
+/* ---------- HEADER ---------- */
+
+.menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    width: 100%;
+    margin: 0 0 36px;
+    padding: 0;
+}
+
+.menu-logo {
+    color: var(--text);
+    font-size: 32px;
+    font-weight: 950;
+    letter-spacing: -0.07em;
+    line-height: 1.1;
+}
+
+.menu-subtitle {
+    margin-top: 5px;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    line-height: 1.4;
+}
+
+
+/* ---------- ICON BUTTON ---------- */
+
+.icon-button {
+    display: grid;
+    place-items: center;
+
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+
+    padding: 0;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 22px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        color var(--transition),
+        transform var(--transition);
+}
+
+.icon-button:hover {
+    background: var(--surface-light);
+    border-color: var(--border-hover);
+}
+
+.icon-button:active {
+    transform: scale(0.96);
+}
+
+
+/* ---------- PLAYER INFO ---------- */
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    min-width: 0;
+    margin-bottom: 30px;
+    padding: 18px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+
+    background: var(--surface);
+}
+
+.player-avatar {
+    display: grid;
+    place-items: center;
+
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    background: var(--surface-light);
+    color: var(--text);
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.player-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.player-label {
+    color: var(--text-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+}
+
+.player-name {
+    color: var(--text);
+
+    font-size: 16px;
+    font-weight: 750;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ---------- MENU ACTIONS ---------- */
+
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.menu-button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    width: 100%;
+    min-height: 94px;
+    padding: 21px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+
+    background: var(--surface);
+    color: var(--text);
+
+    text-align: left;
+    cursor: pointer;
+
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+}
+
+.menu-button:hover {
+    background: var(--surface-light);
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+}
+
+.menu-button:active {
+    transform: translateY(0) scale(0.99);
+}
+
+.menu-button-main {
+    min-height: 112px;
+
+    background: var(--text);
+    color: var(--accent-text);
+}
+
+.menu-button-main:hover {
+    background: #e8e8ed;
+    border-color: #e8e8ed;
+}
+
+.menu-button-title {
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+}
+
+.menu-button-description {
+    color: var(--text-muted);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.menu-button-main .menu-button-description {
+    color: #555560;
+}
+
+
+/* ---------- MENU FOOTER ---------- */
+
+.menu-footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+
+    width: 100%;
+    margin-top: 24px;
+}
+
+.footer-button {
+    min-width: 0;
+    min-height: 46px;
+    padding: 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+
+    background: transparent;
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+
+    cursor: pointer;
+
+    transition:
+        background var(--transition),
+        color var(--transition),
+        border-color var(--transition);
+}
+
+.footer-button:hover {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border-hover);
+}
+
+
+/* =========================================================
+   PROFILE FOOTER
+   Fixiert am unteren Bildschirmrand
+========================================================= */
+
+.profile-footer {
+    position: fixed;
+    z-index: 1000;
+
+    left: 50%;
+    bottom: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    width: min(100%, 560px);
+    max-width: 560px;
+    min-height: 58px;
+
+    margin: 0;
+    padding: 12px 20px;
+
+    transform: translateX(-50%);
+
+    background: var(--background, #08080c);
+    border-top: 1px solid var(--border);
+
+    box-sizing: border-box;
+}
+
+.profile-footer p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+}
+
+.profile-footer a {
+    color: var(--text-muted);
+
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: right;
+    text-decoration: none;
+
+    transition: color var(--transition);
+}
+
+.profile-footer a:hover {
+    color: var(--text);
+}
+
+
+/* ---------- SHARED PANELS ---------- */
+
+.ui-panel {
+    min-width: 0;
+    padding: 20px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+}
+
+.ui-divider {
+    width: 100%;
+    height: 1px;
+
+    border: 0;
+
+    background: var(--border);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .menu-header {
+        margin-bottom: 28px;
+    }
+
+    .menu-button {
+        min-height: 84px;
+        padding: 18px;
+    }
+
+    .menu-button-main {
+        min-height: 100px;
+    }
+
+    .profile-footer {
+        width: 100%;
+        max-width: 560px;
+
+        min-height: 54px;
+
+        padding:
+            10px
+            16px
+            calc(10px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .profile-footer p {
+        font-size: 9px;
+    }
+
+    .profile-footer a {
+        font-size: 10px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .profile-footer {
+        gap: 8px;
+    }
+
+    .profile-footer p {
+        max-width: 60%;
+    }
+
+    .profile-footer a {
+        max-width: 40%;
+    }
+}
+
+
+/* =========================================================
+   HOVER DEVICES
+========================================================= */
+
+@media (hover: none) {
+
+    .menu-button:hover,
+    .footer-button:hover,
+    .icon-button:hover {
+        transform: none;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .icon-button,
+    .menu-button,
+    .footer-button,
+    .profile-footer,
+    .profile-footer a {
+        transition: none;
+    }
+}

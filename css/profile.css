@@ -1,0 +1,1048 @@
+/* =========================================================
+   FILLER – COLOR FILL
+   PROFILE.CSS
+   Einheitliche Menübreite: maximal 560px
+========================================================= */
+
+/* ---------- DESIGN VARIABLES ---------- */
+
+:root {
+    --profile-background: var(--background, #08080c);
+    --profile-surface: var(--surface, #101016);
+    --profile-surface-light: var(--surface-light, #181820);
+
+    --profile-text: var(--text, #ffffff);
+    --profile-text-muted: var(--text-muted, #8f8f9d);
+    --profile-border: var(--border, rgba(255, 255, 255, 0.08));
+
+    --profile-width: 560px;
+    --profile-gutter: 20px;
+
+    --profile-radius: 16px;
+    --profile-radius-small: 10px;
+}
+
+/* ---------- BOX MODEL ---------- */
+
+.profile-page,
+.profile-container,
+.profile-container * {
+    box-sizing: border-box;
+}
+
+.profile-container * {
+    min-width: 0;
+}
+
+.profile-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ---------- PROFILE HEADER WRAPPER ---------- */
+
+/*
+   Gleiche Breite wie der Menücontainer.
+   Der eigentliche Header wird global in global_ui.css gestaltet.
+*/
+
+.profile-page {
+    width: 100%;
+    max-width: var(--profile-width);
+    margin-inline: auto;
+    padding: 24px 20px 0;
+    box-sizing: border-box;
+}
+
+.profile-page .menu-header {
+    width: 100%;
+    margin: 0 0 28px;
+}
+
+/*
+   Die globalen .menu-logo-, .menu-subtitle-
+   und .icon-button-Regeln werden bewusst nicht überschrieben.
+*/
+
+/* ---------- MAIN PROFILE CONTAINER ---------- */
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+
+    width: 100%;
+    max-width: var(--profile-width);
+
+    margin-inline: auto;
+    padding: 0 20px 40px;
+
+    box-sizing: border-box;
+}
+
+/* ---------- COMMON SECTION STYLES ---------- */
+
+.stats-section {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+}
+
+.eyebrow {
+    margin: 0 0 7px;
+
+    color: var(--profile-text-muted);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
+.muted {
+    color: var(--profile-text-muted);
+}
+
+.section-description {
+    margin: 8px 0 0;
+
+    color: var(--profile-text-muted);
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* ---------- PROFILE HERO ---------- */
+
+.profile-hero {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    width: 100%;
+    max-width: 100%;
+
+    margin: 0;
+    padding: 20px;
+
+    background: var(--profile-surface);
+    border: 1px solid var(--profile-border);
+    border-radius: var(--profile-radius);
+}
+
+.profile-hero::after {
+    content: "";
+
+    position: absolute;
+    z-index: -1;
+    top: -75px;
+    right: -85px;
+
+    width: 160px;
+    height: 160px;
+
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 0 18px rgba(255, 255, 255, 0.012),
+        0 0 0 36px rgba(255, 255, 255, 0.008);
+
+    pointer-events: none;
+}
+
+/* ---------- AVATAR ---------- */
+
+.avatar {
+    display: grid;
+    place-items: center;
+
+    width: 68px;
+    height: 68px;
+    flex: 0 0 68px;
+
+    overflow: hidden;
+
+    background: var(--profile-text);
+    color: var(--profile-background);
+
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+/* ---------- PLAYER IDENTITY ---------- */
+
+.profile-identity {
+    position: relative;
+    z-index: 1;
+
+    min-width: 0;
+}
+
+.profile-identity h1 {
+    margin: 0;
+
+    color: var(--profile-text);
+
+    font-size: clamp(21px, 5vw, 28px);
+    font-weight: 850;
+    letter-spacing: -0.8px;
+    line-height: 1.2;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+#profileEmail {
+    margin: 7px 0 12px;
+
+    color: var(--profile-text-muted);
+
+    font-size: 12px;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.player-level {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    max-width: 100%;
+    margin: 0;
+    padding: 6px 10px;
+
+    background: var(--profile-surface-light);
+    border: 1px solid var(--profile-border);
+    border-radius: 8px;
+
+    color: var(--profile-text-muted);
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.player-level strong {
+    color: var(--profile-text);
+    font-size: 13px;
+    font-weight: 850;
+}
+
+/* ---------- XP PANEL ---------- */
+
+.xp-panel {
+    grid-column: 1 / -1;
+
+    width: 100%;
+    min-width: 0;
+    padding: 16px;
+
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--profile-border);
+    border-radius: 12px;
+}
+
+.xp-panel .stat-label {
+    margin: 0;
+}
+
+.xp-panel .stat-value {
+    margin: 7px 0 13px;
+
+    color: var(--profile-text);
+
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1.2;
+
+    overflow-wrap: anywhere;
+}
+
+.xp-track,
+.progress-track {
+    width: 100%;
+    height: 8px;
+
+    overflow: hidden;
+
+    background: #282832;
+    border-radius: 999px;
+}
+
+.xp-progress,
+.progress-fill {
+    width: 0%;
+    height: 100%;
+
+    background: var(--profile-text);
+    border-radius: inherit;
+
+    transition: width 400ms ease;
+}
+
+#xpProgressText {
+    margin: 9px 0 0;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* ---------- SECTION HEADINGS ---------- */
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    width: 100%;
+    margin: 0 0 17px;
+}
+
+.section-heading > div {
+    min-width: 0;
+}
+
+.section-heading h2 {
+    margin: 0;
+
+    color: var(--profile-text);
+
+    font-size: clamp(21px, 5vw, 26px);
+    font-weight: 850;
+    letter-spacing: -0.7px;
+    line-height: 1.25;
+
+    overflow-wrap: anywhere;
+}
+
+.section-icon {
+    display: grid;
+    place-items: center;
+
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+
+    background: var(--profile-surface-light);
+    border: 1px solid var(--profile-border);
+    border-radius: 10px;
+
+    color: var(--profile-text);
+    font-size: 16px;
+}
+
+/* ---------- STAT LABELS ---------- */
+
+.stat-label {
+    display: block;
+
+    color: var(--profile-text-muted);
+
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.stat-value {
+    color: var(--profile-text);
+}
+
+/* ---------- STATISTICS GRID ---------- */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+
+    width: 100%;
+    max-width: 100%;
+}
+
+/* ---------- STATISTIC CARDS ---------- */
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 102px;
+    padding: 14px;
+
+    background: var(--profile-surface);
+    border: 1px solid var(--profile-border);
+    border-radius: 12px;
+
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
+}
+
+.stat-card strong {
+    display: block;
+
+    max-width: 100%;
+    margin-top: 9px;
+
+    color: var(--profile-text);
+
+    font-size: clamp(21px, 5vw, 25px);
+    font-weight: 850;
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.stat-card small {
+    margin-top: 5px;
+
+    color: var(--profile-text-muted);
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.stat-icon {
+    display: grid;
+    place-items: center;
+
+    width: 30px;
+    height: 30px;
+    margin-bottom: 10px;
+
+    background: var(--profile-surface-light);
+    border: 1px solid var(--profile-border);
+    border-radius: 9px;
+
+    font-size: 15px;
+}
+
+/* ---------- OVERVIEW ---------- */
+
+.overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.overview-grid .stat-card {
+    min-height: 116px;
+}
+
+#rankedRank {
+    font-size: clamp(15px, 3.7vw, 21px);
+    letter-spacing: -0.4px;
+}
+
+/* ---------- GAME MODE SECTIONS ---------- */
+
+.mode-section {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    margin: 0;
+    padding: 16px;
+
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid var(--profile-border);
+    border-radius: var(--profile-radius);
+}
+
+.mode-section .section-heading {
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.mode-section .section-heading h2 {
+    font-size: 22px;
+}
+
+.mode-section .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.mode-section .stat-card {
+    min-height: 94px;
+    padding: 12px;
+}
+
+.mode-section .stat-card strong {
+    font-size: clamp(20px, 4.5vw, 24px);
+}
+
+.mode-section .stat-card .stat-label {
+    font-size: 10px;
+}
+
+/* ---------- CAMPAIGN PROGRESS ---------- */
+
+.campaign-progress-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    margin: 0 0 14px;
+    padding: 16px;
+
+    background: var(--profile-surface);
+    border: 1px solid var(--profile-border);
+    border-radius: 12px;
+}
+
+.progress-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-bottom: 12px;
+
+    color: var(--profile-text-muted);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.progress-heading strong {
+    color: var(--profile-text);
+    font-size: 16px;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.campaign-progress-panel .progress-track {
+    height: 7px;
+}
+
+.campaign-progress-panel .progress-fill {
+    background: var(--profile-text);
+}
+
+.campaign-progress-panel > p {
+    margin: 10px 0 0;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* ---------- CAMPAIGN SUBSECTION ---------- */
+
+.subsection-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin: 24px 0 13px;
+}
+
+.subsection-heading h3 {
+    margin: 0;
+
+    color: var(--profile-text);
+
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.subsection-heading .muted {
+    font-size: 11px;
+}
+
+/* ---------- CAMPAIGN LEVEL RESULTS ---------- */
+
+.level-results {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+
+    width: 100%;
+    max-width: 100%;
+}
+
+.level-results > p {
+    grid-column: 1 / -1;
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.level-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 78px;
+    padding: 9px 5px;
+
+    background: var(--profile-surface);
+    border: 1px solid var(--profile-border);
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+.level-result.completed {
+    background: var(--profile-surface-light);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.level-result.locked {
+    opacity: 0.45;
+}
+
+.level-result .level-name {
+    color: var(--profile-text-muted);
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.level-result .level-stars {
+    color: var(--profile-text);
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* ---------- RANKED BADGE ---------- */
+
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    max-width: 120px;
+    padding: 6px 10px;
+
+    background: var(--profile-surface-light);
+    border: 1px solid var(--profile-border);
+    border-radius: 999px;
+
+    color: var(--profile-text);
+
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.4;
+    text-align: center;
+
+    overflow-wrap: anywhere;
+}
+
+/* ---------- RANKED HIGHLIGHTS ---------- */
+
+.rank-highlight {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.rank-highlight > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 9px;
+
+    min-width: 0;
+    min-height: 92px;
+    padding: 14px;
+
+    background: var(--profile-surface);
+    border: 1px solid var(--profile-border);
+    border-radius: 12px;
+}
+
+.rank-highlight .stat-label {
+    font-size: 10px;
+}
+
+.rank-highlight strong {
+    color: var(--profile-text);
+
+    font-size: clamp(19px, 4.5vw, 25px);
+    font-weight: 850;
+    line-height: 1.25;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* ---------- PROFILE STATUS ---------- */
+
+.status-message {
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+
+    color: var(--profile-text-muted);
+
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.status-message:empty {
+    display: none;
+}
+
+/* ---------- TABLET AND SMALL WINDOWS ---------- */
+
+@media (min-width: 561px) {
+    .profile-page,
+    .profile-container {
+        width: 100%;
+        max-width: var(--profile-width);
+    }
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 480px) {
+    :root {
+        --profile-gutter: 16px;
+    }
+
+    .profile-page {
+        padding:
+            calc(20px + env(safe-area-inset-top, 0px))
+            var(--profile-gutter)
+            0;
+    }
+
+    .profile-page .menu-header {
+        margin-bottom: 24px;
+    }
+
+    .profile-container {
+        gap: 22px;
+        padding: 0 var(--profile-gutter) 30px;
+    }
+
+    .profile-hero {
+        gap: 13px;
+        padding: 15px;
+        border-radius: 14px;
+    }
+
+    .avatar {
+        width: 58px;
+        height: 58px;
+        flex-basis: 58px;
+
+        border-radius: 13px;
+        font-size: 26px;
+    }
+
+    .profile-identity h1 {
+        font-size: 22px;
+    }
+
+    #profileEmail {
+        margin: 6px 0 9px;
+        font-size: 11px;
+    }
+
+    .player-level {
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+
+    .xp-panel {
+        padding: 13px;
+    }
+
+    .xp-panel .stat-value {
+        font-size: 27px;
+    }
+
+    .section-heading {
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .section-heading h2,
+    .mode-section .section-heading h2 {
+        font-size: 20px;
+    }
+
+    .section-description {
+        font-size: 11px;
+    }
+
+    .section-icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .stats-grid,
+    .overview-grid,
+    .mode-section .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .stat-card,
+    .mode-section .stat-card {
+        min-height: 88px;
+        padding: 11px 9px;
+    }
+
+    .overview-grid .stat-card {
+        min-height: 100px;
+    }
+
+    .stat-card strong,
+    .mode-section .stat-card strong {
+        margin-top: 7px;
+        font-size: 20px;
+    }
+
+    .stat-card .stat-label,
+    .mode-section .stat-card .stat-label {
+        font-size: 10px;
+    }
+
+    .stat-icon {
+        width: 27px;
+        height: 27px;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .mode-section {
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    .mode-section .section-heading {
+        margin-bottom: 14px;
+    }
+
+    .campaign-progress-panel {
+        padding: 13px;
+    }
+
+    .progress-heading {
+        font-size: 11px;
+    }
+
+    .progress-heading strong {
+        font-size: 14px;
+    }
+
+    .rank-highlight {
+        gap: 8px;
+    }
+
+    .rank-highlight > div {
+        min-height: 80px;
+        padding: 11px;
+    }
+
+    .rank-highlight strong {
+        font-size: 19px;
+    }
+
+    .rank-badge {
+        max-width: 100px;
+        padding: 5px 7px;
+        font-size: 9px;
+    }
+
+    .level-results {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .level-result {
+        min-height: 72px;
+        padding: 8px 3px;
+    }
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-name-row h1 {
+  margin: 0;
+}
+
+.profile-name-edit-button {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+
+  cursor: pointer;
+  font-size: 17px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.profile-name-edit-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.profile-name-editor {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+}
+
+.profile-name-editor[hidden] {
+  display: none;
+}
+
+.profile-name-editor input {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+
+  font: inherit;
+  outline: none;
+}
+
+.profile-name-editor input:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.profile-name-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-name-editor-actions button {
+  border: 0;
+  border-radius: 9px;
+  padding: 9px 14px;
+
+  cursor: pointer;
+  font: inherit;
+}
+
+#saveProfileNameButton {
+  background: #fff;
+  color: #111;
+}
+
+#cancelProfileNameButton {
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+}
+
+/* ---------- VERY SMALL PHONES ---------- */
+
+@media (max-width: 360px) {
+    .profile-hero {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .avatar {
+        width: 54px;
+        height: 54px;
+        flex-basis: 54px;
+    }
+
+    .profile-identity h1 {
+        font-size: 21px;
+    }
+
+    .stats-grid,
+    .overview-grid,
+    .mode-section .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stat-card,
+    .mode-section .stat-card {
+        padding: 10px 8px;
+    }
+
+    .stat-card strong,
+    .mode-section .stat-card strong {
+        font-size: 18px;
+    }
+
+    .level-results {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ---------- HOVER DEVICES ---------- */
+
+@media (hover: hover) and (pointer: fine) {
+    .stat-card:hover {
+        background: var(--profile-surface-light);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+    }
+
+    .level-result:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+    }
+}
+
+/* ---------- REDUCED MOTION ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .stat-card,
+    .xp-progress,
+    .progress-fill {
+        transition: none;
+    }
+}

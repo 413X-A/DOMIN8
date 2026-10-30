@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+    <meta name="theme-color" content="#08080c">
+
+    <title>FILLER – Ranked</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/global_ui.css">
+    <link rel="stylesheet" href="../css/ranked.css">
+</head>
+
+<body>
+<main id="ranked-app" class="ranked-page">
+
+    <header class="global-header">
+
+    <button
+        id="global-back-button"
+        class="global-header-back"
+        type="button"
+        aria-label="Zurück zum Menü"
+    >
+        ←
+    </button>
+
+    <div class="global-header-brand">
+
+        <div class="menu-logo">
+            FILLER
+        </div>
+
+        <div class="menu-subtitle">
+            COLOR FILL
+        </div>
+
+    </div>
+
+    <div class="global-header-rating">
+
+        <span class="global-header-rating-label">
+            RATING
+        </span>
+
+        <strong
+            id="global-rating"
+            class="global-header-rating-value"
+        >
+            0
+        </strong>
+
+    </div>
+
+</header>
+
+    <p id="ranked-global-status"
+       class="status-message ranked-global-status"
+       role="status"
+       aria-live="polite">
+        Ranked wird geladen …
+    </p>
+
+    <section class="ranked-stats" aria-label="Deine Ranked-Statistik">
+        <div class="ui-panel ranked-stat">
+            <span>Matches</span>
+            <strong id="ranked-games">0</strong>
+        </div>
+
+        <div class="ui-panel ranked-stat">
+            <span>Siege</span>
+            <strong id="ranked-wins">0</strong>
+        </div>
+
+        <div class="ui-panel ranked-stat">
+            <span>Niederlagen</span>
+            <strong id="ranked-losses">0</strong>
+        </div>
+
+        <div class="ui-panel ranked-stat">
+            <span>Remis</span>
+            <strong id="ranked-draws">0</strong>
+        </div>
+    </section>
+
+    <!-- MATCHMAKING -->
+    <section id="ranked-search-panel" class="ui-panel ranked-panel">
+        <span class="ranked-eyebrow">COMPETITIVE · LIVE</span>
+        <h1>Gebiet erobern.</h1>
+
+        <p class="ranked-description">
+            Spiele gegen einen echten Gegner auf einem gemeinsamen
+            Spielfeld. Einmal eroberte Felder bleiben dir bis zum
+            Ende des Matches erhalten.
+        </p>
+
+        <div class="ranked-rules">
+            <div>
+                <span class="ranked-rule-symbol">▦</span>
+                <strong>12 × 12</strong>
+                <small>Ein gemeinsames Board</small>
+            </div>
+
+            <div>
+                <span class="ranked-rule-symbol">120s</span>
+                <strong>2 Minuten</strong>
+                <small>Ein Zeitlimit für beide</small>
+            </div>
+
+            <div>
+                <span class="ranked-rule-symbol">1v1</span>
+                <strong>Live</strong>
+                <small>Echtzeit-Multiplayer</small>
+            </div>
+        </div>
+
+        <button
+            id="ranked-find-button"
+            class="ranked-primary-button"
+            type="button"
+        >
+            GEGENSPIELER SUCHEN
+        </button>
+
+        <button
+            id="ranked-cancel-search"
+            class="ranked-secondary-button"
+            type="button"
+            hidden
+        >
+            SUCHE ABBRECHEN
+        </button>
+
+        <div id="ranked-search-indicator"
+             class="ranked-inline-status"
+             hidden>
+            <span class="ranked-spinner" aria-hidden="true"></span>
+            <div>
+                <strong id="ranked-search-title">Suche läuft</strong>
+                <p id="ranked-search-detail">
+                    Warte auf einen anderen Spieler …
+                </p>
+            </div>
+        </div>
+
+        <p class="ranked-footnote">
+            Das Match beginnt, sobald ein zweiter Spieler gefunden wurde.
+            Die Wertung wird nach Matchende aktualisiert.
+        </p>
+    </section>
+
+    <!-- GEMEINSAMES SPIELFELD -->
+    <section id="ranked-match-panel"
+             class="ui-panel ranked-panel"
+             hidden>
+
+        <div class="ranked-match-header">
+            <div>
+                <span class="ranked-eyebrow">LIVE MATCH</span>
+                <h1 id="ranked-match-title">Gebietskampf</h1>
+            </div>
+
+            <div class="ranked-clock">
+                <span>ZEIT ÜBRIG</span>
+                <strong id="ranked-match-time">02:00</strong>
+            </div>
+        </div>
+
+        <div class="ranked-versus">
+            <div class="ranked-player-card">
+                <span class="ranked-player-label">DU</span>
+                <strong id="ranked-me-name">Du</strong>
+                <small id="ranked-me-rating">Rating 1000</small>
+
+                <div class="ranked-player-score">
+                    <strong id="ranked-me-owned">1</strong>
+                    <span>Felder</span>
+                </div>
+
+                <div class="ranked-progress-track">
+                    <div id="ranked-me-progress-bar"
+                         class="ranked-progress-fill"></div>
+                </div>
+
+                <small id="ranked-me-progress">0,7 % des Boards</small>
+            </div>
+
+            <div class="ranked-versus-mark">VS</div>
+
+            <div class="ranked-player-card">
+                <span class="ranked-player-label">GEGNER</span>
+                <strong id="ranked-opponent-name">Gegner</strong>
+                <small id="ranked-opponent-rating">Rating 1000</small>
+
+                <div class="ranked-player-score">
+                    <strong id="ranked-opponent-owned">1</strong>
+                    <span>Felder</span>
+                </div>
+
+                <div class="ranked-progress-track">
+                    <div id="ranked-opponent-progress-bar"
+                         class="ranked-progress-fill opponent-fill"></div>
+                </div>
+
+                <small id="ranked-opponent-progress">0,7 % des Boards</small>
+            </div>
+        </div>
+
+        <div class="ranked-board-heading">
+            <strong>Gemeinsames Spielfeld</strong>
+            <span>
+                <i class="ranked-legend-dot your-dot"></i> Dein Gebiet
+                <i class="ranked-legend-dot enemy-dot"></i> Gegnergebiet
+            </span>
+        </div>
+
+        <div id="ranked-board"
+             class="ranked-board"
+             role="img"
+             aria-label="Gemeinsames Ranked-Spielfeld"></div>
+
+        <div class="ranked-game-info">
+            <span>Züge: <strong id="ranked-moves">0</strong></span>
+            <span>Farbe wählen</span>
+            <span>Felder: <strong id="ranked-filled">2 / 144</strong></span>
+        </div>
+
+        <div id="ranked-color-picker"
+             class="ranked-color-picker"
+             aria-label="Farbe auswählen"></div>
+
+        <p id="ranked-game-status"
+           class="ranked-game-status"
+           role="status"
+           aria-live="polite">
+            Wähle eine Farbe, um dein Gebiet auszubreiten.
+        </p>
+
+        <div id="ranked-waiting-result"
+             class="ranked-inline-status"
+             hidden>
+            <span class="ranked-spinner" aria-hidden="true"></span>
+            <div>
+                <strong>Deine Züge sind beendet</strong>
+                <p id="ranked-waiting-detail">
+                    Das Match läuft weiter, bis die Zeit abläuft.
+                </p>
+            </div>
+        </div>
+
+        <div id="ranked-match-result"
+             class="ranked-result"
+             hidden>
+            <div id="ranked-result-icon" class="ranked-result-icon">🏆</div>
+            <span class="ranked-eyebrow">MATCH ABGESCHLOSSEN</span>
+            <h2 id="ranked-result-title">Ergebnis</h2>
+            <p id="ranked-result-description"></p>
+
+            <div class="ranked-result-stats">
+                <div>
+                    <span>Dein Gebiet</span>
+                    <strong id="ranked-result-my-owned">—</strong>
+                </div>
+                <div>
+                    <span>Gegnergebiet</span>
+                    <strong id="ranked-result-opponent-owned">—</strong>
+                </div>
+                <div>
+                    <span>Rating</span>
+                    <strong id="ranked-result-rating">—</strong>
+                </div>
+            </div>
+
+            <button
+                id="ranked-play-again"
+                class="ranked-primary-button"
+                type="button"
+            >
+                NOCH EIN MATCH
+            </button>
+
+            <button
+                id="ranked-result-menu"
+                class="ranked-secondary-button"
+                type="button"
+            >
+                ZURÜCK ZUM MENÜ
+            </button>
+        </div>
+    </section>
+
+    <!-- RANGLISTE -->
+    <section class="ui-panel ranked-panel ranked-leaderboard-panel">
+        <span class="ranked-eyebrow">LEADERBOARD</span>
+        <h2>Top-Spieler</h2>
+        <p class="ranked-description">
+            Die besten Spieler nach Ranked-Rating.
+        </p>
+
+        <div id="ranked-leaderboard" class="ranked-leaderboard">
+            <p class="muted">Rangliste wird geladen …</p>
+        </div>
+    </section>
+
+    
+
+    <!-- =====================================================
+         GLOBALER FOOTER
+    ====================================================== -->
+
+<footer class="profile-footer">
+
+    <div class="profile-footer-buttons">
+
+        <button
+            class="footer-button"
+            data-page="profile"
+            type="button"
+        >
+            PROFIL
+        </button>
+
+        <button
+            class="footer-button"
+            data-page="settings"
+            type="button"
+        >
+            ⛭
+        </button>
+
+        <button
+            class="footer-button"
+            data-page="menu"
+            type="button"
+        >
+            ⌂
+        </button>
+
+    </div>
+
+    <p>
+        FILLER – COLOR FILL
+    </p>
+
+</footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/global.js"></script>
+<script src="../js/ranked.js"></script>
+</body>
+</html>

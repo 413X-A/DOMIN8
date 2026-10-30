@@ -1,0 +1,601 @@
+/* =========================================================
+   FILLER – COLOR FILL
+   SETTINGS.CSS
+========================================================= */
+
+
+/* =========================================================
+   SETTINGS PAGE
+========================================================= */
+
+.settings-page {
+    width: 100%;
+
+    flex: 1 0 auto;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   SETTINGS CONTAINER
+========================================================= */
+
+.settings-container {
+    width: min(
+        100%,
+        var(--menu-width)
+    );
+
+    margin: 0 auto;
+
+    padding:
+        20px
+        20px
+        50px;
+}
+
+
+/* =========================================================
+   SETTINGS HEADING
+========================================================= */
+
+.settings-heading {
+    margin: 0 0 32px;
+}
+
+.settings-heading h1 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 28px;
+    font-weight: 950;
+
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+}
+
+.settings-heading p {
+    margin: 8px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+    font-weight: 500;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SETTINGS SECTION
+========================================================= */
+
+.settings-section {
+    width: 100%;
+
+    margin: 0 0 28px;
+}
+
+.settings-section:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.settings-section-header {
+    margin: 0 0 10px;
+
+    padding:
+        0
+        4px;
+}
+
+.settings-section-header h2 {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: 0.18em;
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   SETTINGS LIST
+========================================================= */
+
+.settings-list {
+    width: 100%;
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-medium);
+
+    background: var(--surface);
+
+    box-shadow: var(--shadow-small);
+}
+
+
+/* =========================================================
+   SETTINGS ROW
+========================================================= */
+
+.settings-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    width: 100%;
+    min-height: 74px;
+
+    padding:
+        15px
+        18px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: var(--surface);
+
+    transition:
+        background var(--transition);
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-row:hover {
+    background: var(--surface-light);
+}
+
+
+/* =========================================================
+   ROW CONTENT
+========================================================= */
+
+.settings-row-content {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+}
+
+.settings-row-content strong {
+    display: block;
+
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 800;
+
+    line-height: 1.35;
+}
+
+.settings-row-content span {
+    display: block;
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+    font-weight: 500;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   STATIC ROW
+========================================================= */
+
+.settings-row-static {
+    cursor: default;
+}
+
+.settings-row-static:hover {
+    background: var(--surface);
+}
+
+
+/* =========================================================
+   STATIC VALUE
+========================================================= */
+
+.settings-value {
+    flex-shrink: 0;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    font-weight: 850;
+
+    letter-spacing: 0.1em;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   SWITCH
+========================================================= */
+
+.settings-switch {
+    position: relative;
+
+    display: inline-flex;
+
+    flex-shrink: 0;
+
+    width: 48px;
+    height: 28px;
+
+    margin: 0;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   SWITCH INPUT
+========================================================= */
+
+.settings-switch input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    margin: -1px;
+    padding: 0;
+
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+
+    white-space: nowrap;
+
+    border: 0;
+
+    opacity: 0;
+}
+
+
+/* =========================================================
+   SWITCH TRACK
+========================================================= */
+
+.settings-slider {
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius-pill);
+
+    background: var(--surface-light);
+
+    transition:
+        background var(--transition),
+        border-color var(--transition);
+}
+
+
+/* =========================================================
+   SWITCH KNOB
+========================================================= */
+
+.settings-slider::before {
+    content: "";
+
+    position: absolute;
+
+    top: 3px;
+    left: 3px;
+
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: var(--text-muted);
+
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform var(--transition),
+        background var(--transition);
+}
+
+
+/* =========================================================
+   SWITCH – ON
+========================================================= */
+
+.settings-switch input:checked + .settings-slider {
+    background: var(--text);
+
+    border-color: var(--text);
+}
+
+.settings-switch input:checked + .settings-slider::before {
+    background: var(--background);
+
+    transform: translateX(20px);
+}
+
+
+/* =========================================================
+   SWITCH – HOVER
+========================================================= */
+
+.settings-switch:hover .settings-slider {
+    border-color: rgba(255, 255, 255, 0.24);
+}
+
+.settings-switch:hover input:checked + .settings-slider {
+    border-color: var(--text);
+}
+
+
+/* =========================================================
+   SWITCH – FOCUS
+========================================================= */
+
+.settings-switch input:focus-visible + .settings-slider {
+    outline: 2px solid var(--accent);
+
+    outline-offset: 4px;
+}
+
+
+/* =========================================================
+   SETTINGS FOOTER ABSTAND
+========================================================= */
+
+.settings-page + .menu-footer {
+    margin-top: 0;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 760px) {
+
+    .settings-container {
+        width: min(
+            100%,
+            680px
+        );
+
+        padding:
+            20px
+            20px
+            44px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .settings-container {
+        width: 100%;
+
+        padding:
+            16px
+            calc(16px + var(--safe-right))
+            36px
+            calc(16px + var(--safe-left));
+    }
+
+
+    /* ---------- HEADING ---------- */
+
+    .settings-heading {
+        margin-bottom: 26px;
+    }
+
+    .settings-heading h1 {
+        font-size: 25px;
+
+        letter-spacing: -0.045em;
+    }
+
+    .settings-heading p {
+        margin-top: 7px;
+
+        font-size: 12px;
+    }
+
+
+    /* ---------- SECTION ---------- */
+
+    .settings-section {
+        margin-bottom: 22px;
+    }
+
+    .settings-section-header {
+        margin-bottom: 9px;
+
+        padding-left: 3px;
+    }
+
+
+    /* ---------- LIST ---------- */
+
+    .settings-list {
+        border-radius: var(--radius-medium);
+    }
+
+
+    /* ---------- ROW ---------- */
+
+    .settings-row {
+        min-height: 68px;
+
+        gap: 14px;
+
+        padding:
+            14px;
+    }
+
+
+    /* ---------- TEXT ---------- */
+
+    .settings-row-content {
+        gap: 2px;
+    }
+
+    .settings-row-content strong {
+        font-size: 13px;
+    }
+
+    .settings-row-content span {
+        font-size: 11px;
+
+        line-height: 1.35;
+    }
+
+
+    /* ---------- SWITCH ---------- */
+
+    .settings-switch {
+        width: 44px;
+        height: 26px;
+    }
+
+    .settings-slider::before {
+        width: 18px;
+        height: 18px;
+
+        top: 3px;
+        left: 3px;
+    }
+
+    .settings-switch input:checked + .settings-slider::before {
+        transform: translateX(18px);
+    }
+
+
+    /* ---------- VALUE ---------- */
+
+    .settings-value {
+        font-size: 10px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .settings-container {
+        padding:
+            14px
+            calc(12px + var(--safe-right))
+            32px
+            calc(12px + var(--safe-left));
+    }
+
+
+    .settings-heading {
+        margin-bottom: 22px;
+    }
+
+    .settings-heading h1 {
+        font-size: 23px;
+    }
+
+    .settings-heading p {
+        font-size: 11px;
+    }
+
+
+    .settings-section {
+        margin-bottom: 19px;
+    }
+
+
+    .settings-row {
+        min-height: 64px;
+
+        gap: 10px;
+
+        padding:
+            12px;
+    }
+
+
+    .settings-row-content strong {
+        font-size: 12px;
+    }
+
+    .settings-row-content span {
+        font-size: 10px;
+    }
+
+
+    .settings-switch {
+        width: 42px;
+        height: 24px;
+    }
+
+    .settings-slider::before {
+        width: 16px;
+        height: 16px;
+
+        top: 3px;
+        left: 3px;
+    }
+
+    .settings-switch input:checked + .settings-slider::before {
+        transform: translateX(18px);
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .settings-row,
+    .settings-slider,
+    .settings-slider::before {
+        transition: none;
+    }
+
+}
